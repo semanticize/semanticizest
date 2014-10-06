@@ -1,4 +1,12 @@
+from six.moves import xrange
 from six.moves.urllib.parse import quote
+
+
+def ngrams(lst, N):
+    """Generate n-grams for 1 <= n <= N from lst."""
+    for n in xrange(N):
+        for start in xrange(len(lst) - n):
+            yield lst[start:start + n + 1]
 
 
 def url_from_title(title, wiki):
