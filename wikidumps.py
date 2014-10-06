@@ -64,17 +64,24 @@ def extract_pages(f):
             elem.clear()
 
 
-def extract_links(text):
-    """Extract all (or most) links from text (wiki syntax).
+def extract_links(article):
+    """Extract all (or most) links from article text (wiki syntax).
 
     Returns an iterable over (target, anchor) pairs.
     """
-    links = re.findall(r"\[\[ ([^]]+)  \]\]", text, re.VERBOSE)
+    links = re.findall(r"\[\[ ([^]]+) \]\] (\w*)", article, re.VERBOSE)
 
-    target_anchor = [l.split('|', 1) if '|' in l else (l, l) for l in links]
+    for l, extra in links:
+        if '|' in l:
+            target, anchor = l.split('|', 1)
+        else:
+            target, anchor = l, l
+        # If the anchor contains a colon, assume it's a file or category link.
+        if ':' in target:
+            continue
 
-    # If the anchor contains a colon, assume it's a file or category link.
-    return [t_a for t_a in target_anchor if ':' not in t_a[0]]
+        anchor += extra
+        yield target, anchor
 
 
 if __name__ == "__main__":
