@@ -64,6 +64,19 @@ def extract_pages(f):
             elem.clear()
 
 
+def extract_links(text):
+    """Extract all (or most) links from text (wiki syntax).
+
+    Returns an iterable over (target, anchor) pairs.
+    """
+    links = re.findall(r"\[\[ ([^]]+)  \]\]", text, re.VERBOSE)
+
+    target_anchor = [l.split('|', 1) if '|' in l else (l, l) for l in links]
+
+    # If the anchor contains a colon, assume it's a file or category link.
+    return [t_a for t_a in target_anchor if ':' not in t_a[0]]
+
+
 if __name__ == "__main__":
     # Test; will write article info + prefix of content to stdout
     import sys
@@ -75,5 +88,7 @@ if __name__ == "__main__":
 
     for pageid, title, text in extract_pages(sys.stdin):
         title = title.encode("utf-8")
-        text = text[:40].replace("\n", "_").encode("utf-8")
-        print("%d '%s' (%s)" % (pageid, title, text))
+        print(title)
+        for target, anchor in extract_links(text):
+            print("    %s -> %s"
+                  % (anchor.encode("utf-8"), target.encode("utf-8")))
