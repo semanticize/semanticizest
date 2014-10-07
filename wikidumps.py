@@ -84,6 +84,13 @@ def extract_links(article):
         yield target, anchor
 
 
+def redirect(page):
+    """Return redirect target for page, if any, else None."""
+    m = re.match(r"\#REDIRECT \s* \[\[ ([^]]+) \]\]", page,
+                 re.IGNORECASE | re.VERBOSE)
+    return m and m.group(1)
+
+
 if __name__ == "__main__":
     # Test; will write article info + prefix of content to stdout
     import sys
