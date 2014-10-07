@@ -36,8 +36,6 @@ nosetests.xml
 # Translations
 *.mo
 
-# Config files
-
 # Mr Developer
 .mr.developer.cfg
 .project
@@ -45,10 +43,6 @@ nosetests.xml
 
 # Vim
 .*.sw[op]
-
-# Java dependencies
-*.jar
-stanford-ner*
 
 # Emacs cruft
 *~
