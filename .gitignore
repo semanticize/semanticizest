@@ -37,7 +37,6 @@ nosetests.xml
 *.mo
 
 # Config files
-xtas_config.py
 
 # Mr Developer
 .mr.developer.cfg

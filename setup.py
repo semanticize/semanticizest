@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 import os.path
 
 
-# Get __version__ from xtas source
+# Get __version__ from source
 dist_dir = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(dist_dir, 'semanticizest/_version.py')) as versionpy:
     exec(versionpy.read())
@@ -24,8 +24,8 @@ def requirements():
 
 
 setup(
-    name="xtas",
-    description="Distributed text analysis suite",
+    name="semanticizest",
+    description="Semanticizer NG",
     long_description=readme(),
     packages=["semanticizest"],
     url="https://github.com/semanticize/semanticizest",
@@ -38,4 +38,6 @@ setup(
         "Topic :: Text Processing",
     ],
     install_requires=requirements(),
+    test_suite='nose.collector',
+    tests_require=['nose'],
 )
