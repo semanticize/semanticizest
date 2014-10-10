@@ -6,7 +6,7 @@ def ngrams(lst, N):
     """Generate n-grams for 1 <= n <= N from lst."""
     for n in xrange(N):
         for start in xrange(len(lst) - n):
-            yield lst[start:start + n + 1]
+            yield tuple(lst[start:start + n + 1])
 
 
 def url_from_title(title, wiki):

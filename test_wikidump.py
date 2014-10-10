@@ -1,9 +1,9 @@
 from cytoolz import compose
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_in, assert_not_in
 
 from textwithlinks import clean_text, remove_links
-from wikidumps import extract_links, redirect
+from wikidumps import extract_links, page_statistics, redirect
 
 
 def test_extract_links():
@@ -23,6 +23,37 @@ def test_extract_links():
                  [("Lithium", "Li"), ("Fluorine", "F")])
     assert_equal(list(extract_links("[[tera-|tera]][[becquerel]]s")),
                  [("tera-", "tera"), ("becquerel", "becquerels")])
+
+
+def test_page_statistics():
+    page = """
+        Wikisyntax is the [[syntax (to be parsed)|syntax]] used on
+        [[Wikipedia]].{{citation needed|date=October 2014}}
+        We have to parse it, and we use every [[hack]] in the
+        [[text]][[book]] that we can find.
+
+        And now, for something [[Wikipedia|completely]] [[hack|different]].
+
+        Let's repeat the [[text]] to get more interesting [[statistic]]s.
+        And the [[book]] too.
+    """
+
+    expected_links = {('syntax (to be parsed)', 'syntax'): 1,
+                      ('Wikipedia', 'Wikipedia'): 1,
+                      ('hack', 'hack'): 1,
+                      ('text', 'text'): 2,
+                      ('book', 'book'): 2,
+                      ('Wikipedia', 'completely'): 1,
+                      ('hack', 'different'): 1,
+                      ('statistic', 'statistics'): 1}
+
+    links, ngrams = page_statistics(page, N=2)
+
+    assert_equal(dict(links), expected_links)
+
+    assert_in(('And', 'now,'), ngrams)
+    assert_not_in(('Wikipedia', 'We'), ngrams)
+    assert_not_in(('find.', 'And'), ngrams)
 
 
 def test_redirect():

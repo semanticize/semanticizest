@@ -2,8 +2,12 @@
 
 from __future__ import print_function
 
+from collections import Counter
+from itertools import chain
 import re
 import xml.etree.ElementTree as etree   # don't use LXML, it's slower (!)
+
+from semanticizest._util import ngrams
 
 
 def _get_namespace(tag):
@@ -93,6 +97,70 @@ def redirect(page):
     m = re.match(r"\#REDIRECT \s* \[\[ ([^]]+) \]\]", page,
                  re.IGNORECASE | re.VERBOSE)
     return m and m.group(1)
+
+
+_UNWANTED = re.compile(r"""
+  (:?
+    # we must catch nested {{}} and {| |}; allow one level of nesting
+    \{ [|{] (?: \{ [|{] .*? [|}] \} | .*? )* [|}] \}
+  | <math> .*? </math>
+  | <ref .*? > .*? </ref>
+  | \[\[ [^][:]* : (\[\[.*?\]\]|.)*? \]\]   # media, categories
+  | =+ .*? =+                               # headers
+  | ''+
+  )
+""", re.DOTALL | re.MULTILINE | re.VERBOSE)
+
+
+def clean_text(page):
+    """Return the clean-ish running text parts of a page."""
+    return re.sub(_UNWANTED, "", page)
+
+
+_LINK_SYNTAX = re.compile(r"""
+    (?:
+        \[\[
+        (?: [^]|]* \|)?     # "target|" in [[target|anchor]]
+    |
+        \]\]
+    )
+""", re.DOTALL | re.MULTILINE | re.VERBOSE)
+
+
+def remove_links(page):
+    """Remove links from clean_text output."""
+    page = re.sub(r'\]\]\[\[', ' ', page)       # hack hack hack, see test
+    return re.sub(_LINK_SYNTAX, '', page)
+
+
+def page_statistics(page, N=7, sentence_splitter=None, tokenizer=None):
+    """Gather statistics from a single WP page.
+
+    The sentence_splitter should be a callable that splits text into sentences.
+    It defaults to an unspecified heuristic.
+
+    Returns
+    -------
+    stats : (dict, dict)
+        The first dict maps (target, anchor) pairs to counts.
+        The second maps n-grams (up to N) to counts.
+    """
+    clean = clean_text(page)
+    link_counts = Counter(extract_links(clean))
+
+    no_links = remove_links(clean)
+    if sentence_splitter is None:
+        sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links, re.MULTILINE)
+    else:
+        sentences = [sentence for paragraph in re.split('\n+', no_links)
+                              for sentence in paragraph]
+
+    if tokenizer is None:
+        tokenizer = str.split
+    ngram_counts = Counter(chain.from_iterable(ngrams(tokenizer(sentence), N)
+                                               for sentence in sentences))
+
+    return link_counts, ngram_counts
 
 
 if __name__ == "__main__":
