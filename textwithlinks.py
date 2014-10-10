@@ -16,3 +16,19 @@ _UNWANTED = re.compile(r"""
 def clean_text(page):
     """Return the clean-ish running text parts of a page."""
     return re.sub(_UNWANTED, "", page)
+
+
+_LINK_ANCHORS = re.compile(r"""
+    (?:
+        \[\[
+        (?: [^|]* \|)?     # "target|" in [[target|anchor]]
+    |
+        \]\]
+    )
+""", re.DOTALL | re.MULTILINE | re.VERBOSE)
+
+
+def remove_links(page):
+    """Remove links from clean_text output."""
+    page = re.sub(r'\]\]\[\[', ' ', page)       # hack hack hack, see test
+    return re.sub(_LINK_ANCHORS, '', page)
