@@ -41,6 +41,7 @@ def extract_pages(f):
     elem = next(elems)
     namespace = _get_namespace(elem.tag)
     ns_mapping = {"ns": namespace}
+    ns_path = "./{%(ns)s}ns" % ns_mapping
     page_tag = "{%(ns)s}page" % ns_mapping
     text_path = "./{%(ns)s}revision/{%(ns)s}text" % ns_mapping
     id_path = "./{%(ns)s}id" % ns_mapping
@@ -48,6 +49,9 @@ def extract_pages(f):
 
     for elem in elems:
         if elem.tag == page_tag:
+            if elem.find(ns_path).text != '0':
+                continue
+
             text = elem.find(text_path).text
             if text is None:
                 # Empty article; these occur in Wikinews dumps.
