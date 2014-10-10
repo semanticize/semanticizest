@@ -1,10 +1,13 @@
 from cytoolz import compose
 
+import os.path
+
 from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in,
                         assert_true)
 
-from textwithlinks import clean_text, remove_links
-from wikidumps import extract_links, page_statistics, parse_dump, redirect
+from semanticizest._wiki_dump_parser import (clean_text, extract_links,
+                                             page_statistics, parse_dump,
+                                             redirect, remove_links)
 
 
 def test_extract_links():
@@ -58,7 +61,8 @@ def test_page_statistics():
 
 
 def test_parse_dump():
-    dump = 'nlwiki-20140927-pages-articles-sample.xml'
+    here = os.path.dirname(os.path.abspath(__file__))
+    dump = os.path.join(here, 'nlwiki-20140927-pages-articles-sample.xml')
     link_count, ngram_count = parse_dump(dump, N=2)
 
     assert_true(isinstance(link_count, dict))
