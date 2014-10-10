@@ -14,6 +14,15 @@ def test_extract_links():
     assert_equal(first_link("[[foo]]bar."), ("foo", "foobar"))
     assert_equal(first_link("[[baz|foobar]];"), ("baz", "foobar"))
 
+    # This construct appears in enwiki for chemical formulae etc., but also in
+    # nlwiki (and dewiki?) for more general compound nouns. The current
+    # handling may not be exactly what we want; any fix should update the test
+    # accordingly.
+    assert_equal(list(extract_links("[[Lithium|Li]][[Fluorine|F]]")),
+                 [("Lithium", "Li"), ("Fluorine", "F")])
+    assert_equal(list(extract_links("[[tera-|tera]][[becquerel]]s")),
+                 [("tera-", "tera"), ("becquerel", "becquerels")])
+
 
 def test_redirect():
     assert_equal(redirect("#ReDiReCt [[frob]] {{R from redirect}}"), "frob")
