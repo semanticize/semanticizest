@@ -1,9 +1,10 @@
 from cytoolz import compose
 
-from nose.tools import assert_equal, assert_in, assert_not_in
+from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in,
+                        assert_true)
 
 from textwithlinks import clean_text, remove_links
-from wikidumps import extract_links, page_statistics, redirect
+from wikidumps import extract_links, page_statistics, parse_dump, redirect
 
 
 def test_extract_links():
@@ -54,6 +55,19 @@ def test_page_statistics():
     assert_in(('And', 'now,'), ngrams)
     assert_not_in(('Wikipedia', 'We'), ngrams)
     assert_not_in(('find.', 'And'), ngrams)
+
+
+def test_parse_dump():
+    dump = 'nlwiki-20140927-pages-articles-sample.xml'
+    link_count, ngram_count = parse_dump(dump, N=2)
+
+    assert_true(isinstance(link_count, dict))
+    assert_true(isinstance(ngram_count, dict))
+
+    # We need a better tokenizer.
+    assert_in(('Heinrich', 'Tessenow,'), ngram_count)
+    assert_in(('Heinrich Tessenow', 'Heinrich Tessenow'), link_count)
+    assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
 
 
 def test_redirect():

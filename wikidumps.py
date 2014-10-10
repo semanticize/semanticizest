@@ -2,10 +2,14 @@
 
 from __future__ import print_function
 
+from bz2 import BZ2File
 from collections import Counter
+import gzip
 from itertools import chain
 import re
 import xml.etree.ElementTree as etree   # don't use LXML, it's slower (!)
+
+import six
 
 from semanticizest._util import ngrams
 
@@ -156,25 +160,66 @@ def page_statistics(page, N=7, sentence_splitter=None, tokenizer=None):
                               for sentence in paragraph]
 
     if tokenizer is None:
-        tokenizer = str.split
+        tokenizer = lambda s: s.split()
     ngram_counts = Counter(chain.from_iterable(ngrams(tokenizer(sentence), N)
                                                for sentence in sentences))
 
     return link_counts, ngram_counts
 
 
-if __name__ == "__main__":
-    # Test; will write article info + prefix of content to stdout
-    import sys
+def _open(f):
+    if isinstance(f, six.string_types):
+        if f.endswith('.gz'):
+            return gzip.open(f)
+        elif f.endswith('.bz2'):
+            return BZ2File(f)
+        return open(f)
+    return f
 
-    if len(sys.argv) > 1:
-        print("usage: %s; will read from standard input" % sys.argv[0],
-              file=sys.stderr)
-        sys.exit(1)
 
-    for pageid, title, text in extract_pages(sys.stdin):
-        title = title.encode("utf-8")
-        print(title)
-        for target, anchor in extract_links(text):
-            print("    %s -> %s"
-                  % (anchor.encode("utf-8"), target.encode("utf-8")))
+def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
+    """Parse Wikipedia database dump, return n-gram and link statistics.
+
+    Parameters
+    ----------
+    dump : {file-like, str}
+        Path to or handle on a Wikipedia page dump, e.g.
+        'chowiki-20140919-pages-articles.xml.bz2'.
+    N : integer
+        Maximum n-gram length.
+    sentence_splitter : callable, optional
+        Sentence splitter. Called on output of paragraph splitter (strings).
+    tokenizer : callable, optional
+        Tokenizer. Called on output of sentence splitter (strings). Must return
+        iterable over strings.
+
+    """
+
+    f = _open(dump)
+
+    redirects = {}
+    link_count = Counter()
+    ngram_count = Counter()
+
+    for _, title, page in extract_pages(f):
+        target = redirect(page)
+        if target is not None:
+            redirects[title] = target
+            continue
+
+        link, ngram = page_statistics(page, N=N, tokenizer=tokenizer,
+                                      sentence_splitter=sentence_splitter)
+        link_count.update(link)
+        ngram_count.update(ngram)
+
+    with_redir_target = [(target, anchor)
+                         for ((target, anchor), _) in six.iteritems(link_count)
+                         if target in redirects]
+
+    for key in with_redir_target:
+        count = link_count[key]
+        del link_count[key]
+        target, anchor = key
+        link_count[(redirect[target], anchor)] += count
+
+    return link_count, ngram_count
