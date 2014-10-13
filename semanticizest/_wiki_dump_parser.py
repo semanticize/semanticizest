@@ -220,6 +220,6 @@ def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
         count = link_count[key]
         del link_count[key]
         target, anchor = key
-        link_count[(redirect[target], anchor)] += count
+        link_count[(redirects[target], anchor)] += count
 
     return link_count, ngram_count

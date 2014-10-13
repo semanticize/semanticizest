@@ -5899,4 +5899,25 @@ Binnen het vakgebied van de aardwetenschappen vallen ook enkele van de mondiale 
       <format>text/x-wiki</format>
     </revision>
   </page>
+  <page>
+    <title>Architekt</title>
+    <ns>0</ns>
+    <id>16</id>
+    <redirect title="Architect" />
+    <revision>
+      <id>39628166</id>
+      <parentid>37032071</parentid>
+      <timestamp>2013-12-09T19:28:04Z</timestamp>
+      <contributor>
+        <username>RomaineBot</username>
+        <id>231402</id>
+      </contributor>
+      <minor />
+      <comment>Afhandeling WP:TVS op verzoek moderator</comment>
+      <text xml:space="preserve">#REDIRECT [[Architect]]</text>
+      <sha1>tjpv4q9y63pxc8s08jqcn84qu0umqyf</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
 </mediawiki>
