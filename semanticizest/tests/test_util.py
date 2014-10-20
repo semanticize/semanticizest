@@ -7,11 +7,11 @@ from nose.tools import assert_equal, assert_true
 
 def test_ngrams():
     text = "Hello , world !".split()
-    expected = {tuple(l.split()) for l in ["Hello , world", ", world !",
-                                           "Hello ,", ", world", "world !",
-                                           "Hello", ",", "world", "!"]}
+    expected = {"Hello , world", ", world !",
+                "Hello ,", ", world", "world !",
+                "Hello", ",", "world", "!"}
 
-    ng = Counter(map(tuple, ngrams(text, 3)))
+    ng = Counter(ngrams(text, 3))
     assert_equal(set(ng), expected)
     assert_true(all(freq == 1 for freq in ng.values()))
 
