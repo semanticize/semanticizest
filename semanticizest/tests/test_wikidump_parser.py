@@ -1,5 +1,6 @@
 from cytoolz import compose
 
+from collections import Mapping
 import os.path
 
 from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in,
@@ -65,13 +66,20 @@ def test_parse_dump():
     dump = os.path.join(here, 'nlwiki-20140927-pages-articles-sample.xml')
     link_count, ngram_count = parse_dump(dump, N=2)
 
-    assert_true(isinstance(link_count, dict))
-    assert_true(isinstance(ngram_count, dict))
+    assert_true(isinstance(link_count, Mapping))
+    assert_true(isinstance(ngram_count, Mapping))
 
     # We need a better tokenizer.
     assert_in('Heinrich Tessenow,', ngram_count)
     assert_in(('Heinrich Tessenow', 'Heinrich Tessenow'), link_count)
     assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
+
+    # Again, without the n-gram counting.
+    link_count = parse_dump(dump, N=None)
+
+    assert_true(isinstance(link_count, Mapping))
+    assert_in('Heinrich Tessenow,', ngram_count)
+    assert_in(('Heinrich Tessenow', 'Heinrich Tessenow'), link_count)
 
 
 def test_redirect():

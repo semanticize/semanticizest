@@ -137,11 +137,13 @@ def remove_links(page):
     return re.sub(_LINK_SYNTAX, '', page)
 
 
-def page_statistics(page, N=7, sentence_splitter=None, tokenizer=None):
+def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
     """Gather statistics from a single WP page.
 
     The sentence_splitter should be a callable that splits text into sentences.
     It defaults to an unspecified heuristic.
+
+    See ``parse_dump`` for the parameters.
 
     Returns
     -------
@@ -159,10 +161,15 @@ def page_statistics(page, N=7, sentence_splitter=None, tokenizer=None):
         sentences = [sentence for paragraph in re.split('\n+', no_links)
                               for sentence in paragraph]
 
-    if tokenizer is None:
-        tokenizer = lambda s: s.split()
-    ngram_counts = Counter(chain.from_iterable(ngrams(tokenizer(sentence), N)
-                                               for sentence in sentences))
+    if N:
+        if tokenizer is None:
+            tokenizer = lambda s: s.split()
+        all_ngrams = chain.from_iterable(ngrams(tokenizer(sentence), N)
+                                         for sentence in sentences)
+        ngram_counts = Counter(all_ngrams)
+
+    else:
+        ngram_counts = None
 
     return link_counts, ngram_counts
 
@@ -186,12 +193,23 @@ def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
         Path to or handle on a Wikipedia page dump, e.g.
         'chowiki-20140919-pages-articles.xml.bz2'.
     N : integer
-        Maximum n-gram length.
+        Maximum n-gram length. Set this to a false value to disable
+        n-gram counting; this disables some of the fancier statistics,
+        but baseline entity linking will still work.
     sentence_splitter : callable, optional
-        Sentence splitter. Called on output of paragraph splitter (strings).
+        Sentence splitter. Called on output of paragraph splitter
+        (strings).
     tokenizer : callable, optional
-        Tokenizer. Called on output of sentence splitter (strings). Must return
-        iterable over strings.
+        Tokenizer. Called on output of sentence splitter (strings).
+        Must return iterable over strings.
+
+    Returns
+    -------
+    link_count : Mapping of (str, str) to number
+        Maps (anchor text, target) pairs to their absolute frequencies.
+    ngram_count : Mapping of str to number
+        Maps n-grams to their absolute frequencies. N-grams are joined with
+        spaces. Only returned if N is not None.
 
     """
 
@@ -222,4 +240,7 @@ def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
         target, anchor = key
         link_count[(redirects[target], anchor)] += count
 
-    return link_count, ngram_count
+    if N:
+        return link_count, ngram_count
+    else:
+        return link_count
