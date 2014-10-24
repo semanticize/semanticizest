@@ -2,14 +2,23 @@ from six.moves import xrange
 from six.moves.urllib.parse import quote
 
 
-def ngrams(lst, N):
+def ngrams_with_pos(lst, N):
     """Generate n-grams for 1 <= n <= N from lst."""
 
     join = " ".join
 
-    for n in xrange(N):
-        for start in xrange(len(lst) - n):
-            yield join(lst[start:start + n + 1])
+    for start in xrange(len(lst)):
+        for n in xrange(1, 1 + min(N, len(lst) - start)):
+            yield start, start + n, join(lst[start:start + n])
+
+
+def ngrams(lst, N):
+    return (ng for _, _, ng in ngrams_with_pos(lst, N))
+
+
+def tosequence(x):
+    """Cast x to sequence. Returns x if at all possible."""
+    return x if isinstance(x, Sequence) else list(x)
 
 
 def url_from_title(title, wiki):

@@ -1,8 +1,8 @@
 from collections import Counter
 
-from semanticizest._util import ngrams, url_from_title
+from semanticizest._util import ngrams, ngrams_with_pos, url_from_title
 
-from nose.tools import assert_equal, assert_true
+from nose.tools import assert_equal, assert_in, assert_true
 
 
 def test_ngrams():
@@ -14,6 +14,10 @@ def test_ngrams():
     ng = Counter(ngrams(text, 3))
     assert_equal(set(ng), expected)
     assert_true(all(freq == 1 for freq in ng.values()))
+
+    with_pos = list(ngrams_with_pos(text, N=2))
+    assert_in((0, 2, 'Hello ,'), with_pos)
+    assert_in((1, 3, ', world'), with_pos)
 
 
 def test_url_from_title():
