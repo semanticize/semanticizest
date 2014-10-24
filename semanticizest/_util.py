@@ -1,3 +1,4 @@
+from collections import Sequence
 from six.moves import xrange
 from six.moves.urllib.parse import quote
 
