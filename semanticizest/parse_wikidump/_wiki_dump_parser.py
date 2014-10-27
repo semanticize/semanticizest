@@ -224,9 +224,11 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
     c = db.cursor()
 
-    print("Processing articles:", file=sys.stderr)
+    if verbose:
+        print("Processing articles:", file=sys.stderr)
     for _, title, page in extract_pages(f):
-        print("\n" + title, file=sys.stderr)
+        if verbose:
+            print("    " + title, file=sys.stderr)
         target = redirect(page)
         if target is not None:
             redirects[title] = target
@@ -261,7 +263,8 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
         db.commit()
 
-    print("Processing redirects...\n", file=sys.stderr)
+    if verbose:
+        print("Processing redirects...\n", file=sys.stderr)
     for redir, target in redirects.items():
         for anchor, count in c.execute('''select ngram_id, count from linkstats
                                           where target = ?''', [redir]):
