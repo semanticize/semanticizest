@@ -184,7 +184,8 @@ def _open(f):
     return f
 
 
-def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
+def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
+               verbose=False):
     """Parse Wikipedia database dump, return n-gram and link statistics.
 
     Parameters
@@ -192,6 +193,8 @@ def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
     dump : {file-like, str}
         Path to or handle on a Wikipedia page dump, e.g.
         'chowiki-20140919-pages-articles.xml.bz2'.
+    db : SQLite connection
+        Connection to database that will be used to store statistics.
     N : integer
         Maximum n-gram length. Set this to a false value to disable
         n-gram counting; this disables some of the fancier statistics,
@@ -202,24 +205,19 @@ def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
     tokenizer : callable, optional
         Tokenizer. Called on output of sentence splitter (strings).
         Must return iterable over strings.
-
-    Returns
-    -------
-    link_count : Mapping of (str, str) to number
-        Maps (anchor text, target) pairs to their absolute frequencies.
-    ngram_count : Mapping of str to number
-        Maps n-grams to their absolute frequencies. N-grams are joined with
-        spaces. Only returned if N is not None.
-
+    verbose : boolean
+        Whether to report progress on stderr.
     """
 
     f = _open(dump)
 
     redirects = {}
-    link_count = Counter()
-    ngram_count = Counter()
 
+    c = db.cursor()
+
+    print("Processing articles:", file=sys.stderr)
     for _, title, page in extract_pages(f):
+        print("\n" + title, file=sys.stderr)
         target = redirect(page)
         if target is not None:
             redirects[title] = target
@@ -227,20 +225,42 @@ def parse_dump(dump, N=7, sentence_splitter=None, tokenizer=None):
 
         link, ngram = page_statistics(page, N=N, tokenizer=tokenizer,
                                       sentence_splitter=sentence_splitter)
-        link_count.update(link)
-        ngram_count.update(ngram)
 
-    with_redir_target = [(target, anchor)
-                         for ((target, anchor), _) in six.iteritems(link_count)
-                         if target in redirects]
+        tokens = chain(six.iteritems(ngram),
+                       ((anchor, 0) for _, anchor in six.iterkeys(link)))
+        tokens = list(tokens)
+        #c.executemany('''insert or replace into ngrams (ngram, tf)
+                         #values (?, ? + coalesce ((select tf from ngrams
+                                                   #where ngram = ?), 0))''',
+                        #((ng, count, ng)
+                         #for ng, count in tokens)) # six.iteritems(ngram)))
+        c.executemany('''insert or ignore into ngrams (ngram) values (?)''',
+                      ((g,) for g, _ in tokens))
+        c.executemany('''update ngrams set tf = tf + ?
+                         where ngram = ?''',
+                      tokens)
 
-    for key in with_redir_target:
-        count = link_count[key]
-        del link_count[key]
-        target, anchor = key
-        link_count[(redirects[target], anchor)] += count
+        c.executemany('''insert or ignore into linkstats values
+                         ((select id from ngrams where ngram = ?), ?, 0)''',
+                      ((anchor, target)
+                       for target, anchor in six.iterkeys(link)))
+        c.executemany('''update linkstats set count = count + ?
+                         where ngram_id = (select rowid from ngrams
+                                           where ngram = ?)''',
+                      ((count, anchor)
+                       for (_, anchor), count in six.iteritems(link)))
 
-    if N:
-        return link_count, ngram_count
-    else:
-        return link_count
+        db.commit()
+
+    print("Processing redirects...\n", file=sys.stderr)
+    for redir, target in redirects.items():
+        for anchor, count in c.execute('''select ngram_id, count from linkstats
+                                          where target = ?''', [redir]):
+            c.execute('''update linkstats
+                         set count = count + ?
+                         where target = ? and ngram_id = ?''',
+                      (count, target, anchor))
+
+        c.execute('delete from linkstats where target = ?', [redir])
+
+    db.commit()
