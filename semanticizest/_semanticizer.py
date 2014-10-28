@@ -3,7 +3,7 @@ import operator
 
 import six
 
-from semanticizest._util import ngrams, tosequence
+from semanticizest._util import ngrams_with_pos, tosequence
 
 
 class Semanticizer(object):
@@ -33,9 +33,10 @@ class Semanticizer(object):
 
         Returns
         -------
-        candidates : iterable over (int, string, float)
-            Candidate entities: triples of index (in tokenized input),
-            target entity, probability (commonness).
+        candidates : iterable over (int, int, string, float)
+            Candidate entities: 4-tuples of start index, end index
+            (both in tokenized input), target entity and probability
+            (commonness).
         """
 
         if isinstance(s, six.string_types):
