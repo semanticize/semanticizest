@@ -12,6 +12,34 @@ from semanticizest._wiki_dump_parser import (clean_text, extract_links,
                                              redirect, remove_links)
 
 
+# Straight from nlwiki: a {| {| |} table (works in MediaWiki!)
+unclosed_table = '''
+Nikkel wordt verhandeld op beurzen zoals de London Metal Exchange.
+Dagelijks komen vraag en aanbod bij elkaar en komt een prijs tot stand.
+In de onderstaande tabel de gemiddelde prijs van nikkel per jaar.
+{| {| class=&quot;wikitable&quot; style=&quot;text-align: center&quot;
+!Omschrijving
+!2005
+!2006
+!2007
+!2008
+!2009
+!2010
+!2011
+|-
+|Nikkelprijs ($/ton)|| 14.733|| 24.267|| 37.181 || 21.027 || 14.700 ||21.809 || 22.831
+|}
+This is not in the original.'''
+
+
+def test_clean_text():
+    out = clean_text(unclosed_table).splitlines()
+    expected = (unclosed_table.splitlines()[:4]
+                + ['']
+                + unclosed_table.splitlines()[-1:])
+    assert_equal(out, expected)
+
+
 def test_extract_links():
     first_link = compose(tuple, next, iter, extract_links)
 
