@@ -94,6 +94,7 @@ def extract_links(article):
         if ':' in target:
             continue
 
+        target = target.split('#')[0]
         anchor += extra
         yield target, anchor
 
