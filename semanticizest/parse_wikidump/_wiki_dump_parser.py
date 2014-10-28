@@ -5,8 +5,10 @@ from __future__ import print_function
 from bz2 import BZ2File
 from collections import Counter
 import gzip
+from HTMLParser import HTMLParser
 from itertools import chain
 import re
+import sys
 import xml.etree.ElementTree as etree   # don't use LXML, it's slower (!)
 
 import six
@@ -105,20 +107,26 @@ def redirect(page):
 
 _UNWANTED = re.compile(r"""
   (:?
-    # we must catch nested {{}} and {| |}; allow one level of nesting
-    \{ [|{] (?: \{ [|{] .*? [|}] \} | .*? )* [|}] \}
+    \{\{ .*? \}\}
+  | \{\| .*? \|\}
+  | ^[|!] .* $                              # table content
   | <math> .*? </math>
   | <ref .*? > .*? </ref>
+  | <br\s*/>
+  | </?su[bp]\s*>
   | \[\[ [^][:]* : (\[\[.*?\]\]|.)*? \]\]   # media, categories
   | =+ .*? =+                               # headers
   | ''+
+  | ^\*                                     # list bullets
   )
 """, re.DOTALL | re.MULTILINE | re.VERBOSE)
 
 
+_unescape_entities = HTMLParser().unescape
+
 def clean_text(page):
     """Return the clean-ish running text parts of a page."""
-    return re.sub(_UNWANTED, "", page)
+    return re.sub(_UNWANTED, "", _unescape_entities(page))
 
 
 _LINK_SYNTAX = re.compile(r"""
