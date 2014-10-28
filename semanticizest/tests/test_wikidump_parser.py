@@ -47,6 +47,8 @@ def test_extract_links():
     assert_equal(first_link("[[File:picture!]] [[foo]]"), ("foo", "foo"))
     assert_equal(first_link("[[foo]]bar."), ("foo", "foobar"))
     assert_equal(first_link("[[baz|foobar]];"), ("baz", "foobar"))
+    assert_equal(first_link("[[baz#quux]]"), ("baz", "baz#quux"))
+    assert_equal(first_link("[[baz#quux|bla]]"), ("baz", "bla"))
 
     # This construct appears in enwiki for chemical formulae etc., but also in
     # nlwiki (and dewiki?) for more general compound nouns. The current
