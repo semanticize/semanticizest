@@ -172,7 +172,7 @@ def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
 
     if N:
         if tokenizer is None:
-            tokenizer = lambda s: s.split()
+            tokenizer = re.compile(r'\w+').findall
         all_ngrams = chain.from_iterable(ngrams(tokenizer(sentence), N)
                                          for sentence in sentences)
         ngram_counts = Counter(all_ngrams)
