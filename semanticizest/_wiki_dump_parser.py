@@ -241,7 +241,7 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
         # We don't count the n-grams within the links, but we need them
         # in the table, so add them with zero count.
-        tokens = chain(six.iteritems(ngram),
+        tokens = chain(six.iteritems(ngram or {}),
                        ((anchor, 0) for _, anchor in six.iterkeys(link)))
         tokens = list(tokens)
         #c.executemany('''insert or replace into ngrams (ngram, tf)
