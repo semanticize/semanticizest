@@ -239,6 +239,8 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
         link, ngram = page_statistics(page, N=N, tokenizer=tokenizer,
                                       sentence_splitter=sentence_splitter)
 
+        # We don't count the n-grams within the links, but we need them
+        # in the table, so add them with zero count.
         tokens = chain(six.iteritems(ngram),
                        ((anchor, 0) for _, anchor in six.iterkeys(link)))
         tokens = list(tokens)
@@ -249,9 +251,9 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
                          #for ng, count in tokens)) # six.iteritems(ngram)))
         c.executemany('''insert or ignore into ngrams (ngram) values (?)''',
                       ((g,) for g, _ in tokens))
-        c.executemany('''update ngrams set tf = tf + ?
+        c.executemany('''update ngrams set tf = tf + ?, df = df + 1
                          where ngram = ?''',
-                      tokens)
+                      ((count, token) for token, count in tokens))
 
         c.executemany('''insert or ignore into linkstats values
                          ((select id from ngrams where ngram = ?), ?, 0)''',
