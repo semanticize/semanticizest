@@ -83,7 +83,8 @@ def extract_links(article):
 
     Returns an iterable over (target, anchor) pairs.
     """
-    links = re.findall(r"\[\[ ([^]]+) \]\] (\w*)", article, re.VERBOSE)
+    links = re.findall(r"\[\[ ([^]]+) \]\] (\w*)", article,
+                       re.UNICODE | re.VERBOSE)
 
     for l, extra in links:
         if '|' in l:
@@ -102,7 +103,7 @@ def extract_links(article):
 def redirect(page):
     """Return redirect target for page, if any, else None."""
     m = re.match(r"\#REDIRECT \s* \[\[ ([^]]+) \]\]", page,
-                 re.IGNORECASE | re.VERBOSE)
+                 re.IGNORECASE | re.UNICODE | re.VERBOSE)
     return m and m.group(1)
 
 
@@ -120,7 +121,7 @@ _UNWANTED = re.compile(r"""
   | ''+
   | ^\*                                     # list bullets
   )
-""", re.DOTALL | re.MULTILINE | re.VERBOSE)
+""", re.DOTALL | re.MULTILINE | re.UNICODE | re.VERBOSE)
 
 
 _unescape_entities = HTMLParser().unescape
@@ -146,6 +147,7 @@ def remove_links(page):
     return re.sub(_LINK_SYNTAX, '', page)
 
 
+@profile
 def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
     """Gather statistics from a single WP page.
 
@@ -165,14 +167,15 @@ def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
 
     no_links = remove_links(clean)
     if sentence_splitter is None:
-        sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links, re.MULTILINE)
+        sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links,
+                             re.MULTILINE | re.UNICODE)
     else:
         sentences = [sentence for paragraph in re.split('\n+', no_links)
                               for sentence in paragraph]
 
     if N:
         if tokenizer is None:
-            tokenizer = re.compile(r'\w+').findall
+            tokenizer = re.compile(r'\w+', re.UNICODE).findall
         all_ngrams = chain.from_iterable(ngrams(tokenizer(sentence), N)
                                          for sentence in sentences)
         ngram_counts = Counter(all_ngrams)
