@@ -4,10 +4,12 @@ from cytoolz import compose
 
 from os.path import abspath, dirname, join
 import sqlite3
+import tempfile
 
 from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in)
 
 import semanticizest.parse_wikidump
+from semanticizest.parse_wikidump.__main__ import main as parse_wikidump_main
 from semanticizest._wiki_dump_parser import (clean_text, extract_links,
                                              page_statistics, parse_dump,
                                              redirect, remove_links)
@@ -130,6 +132,23 @@ def test_parse_dump():
 
     assert_in('Heinrich Tessenow', ngram_count)
     assert_in('Heinrich Tessenow', link_count)
+
+
+def test_parse_wikidump():
+    tmpfile = 'abcdefXXXXX'
+    dump = join(dirname(abspath(__file__)),
+                'nlwiki-20140927-pages-articles-sample.xml')
+    with tempfile.NamedTemporaryFile(tmpfile) as model_file:
+        args = {'--ngram': 2,
+                '<model-filename>': model_file.name,
+                '<dump>': dump}
+        parse_wikidump_main(args)
+
+        db = sqlite3.connect(model_file.name)
+        cur = db.cursor()
+        actual = list(cur.execute('select count(*) from ngrams;'))[0][0]
+        expected = 22860
+        assert_equal(actual, expected)
 
 
 def test_redirect():
