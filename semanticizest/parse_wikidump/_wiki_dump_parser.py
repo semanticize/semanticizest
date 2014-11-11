@@ -147,7 +147,6 @@ def remove_links(page):
     return re.sub(_LINK_SYNTAX, '', page)
 
 
-@profile
 def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
     """Gather statistics from a single WP page.
 
