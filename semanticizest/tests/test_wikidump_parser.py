@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from cytoolz import compose
 
 from collections import Mapping
@@ -101,8 +103,7 @@ def test_parse_dump():
     assert_true(isinstance(link_count, Mapping))
     assert_true(isinstance(ngram_count, Mapping))
 
-    # We need a better tokenizer.
-    assert_in('Heinrich Tessenow,', ngram_count)
+    assert_in(r'van München', ngram_count)
     assert_in(('Heinrich Tessenow', 'Heinrich Tessenow'), link_count)
     assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
 
