@@ -2,19 +2,7 @@ from collections import Sequence
 from six.moves import xrange
 from six.moves.urllib.parse import quote
 
-
-def ngrams_with_pos(lst, N):
-    """Generate n-grams for 1 <= n <= N from lst."""
-
-    join = " ".join
-
-    for start in xrange(len(lst)):
-        for n in xrange(1, 1 + min(N, len(lst) - start)):
-            yield start, start + n, join(lst[start:start + n])
-
-
-def ngrams(lst, N):
-    return (text for _, _, text in ngrams_with_pos(lst, N))
+from ._ngrams import ngrams, ngrams_with_pos    # re-export
 
 
 def tosequence(x):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, Extension
 import os.path
 
 
@@ -28,6 +28,9 @@ setup(
     description="Semanticizer NG",
     long_description=readme(),
     packages=["semanticizest"],
+    ext_modules=[
+        Extension("semanticizest._ngrams", ["semanticizest/_ngrams.c"])
+    ],
     url="https://github.com/semanticize/semanticizest",
     version=__version__,
     classifiers=[
