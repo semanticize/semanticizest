@@ -2,13 +2,12 @@
 
 from cytoolz import compose
 
-from collections import Mapping
-import os.path
+from os.path import abspath, dirname, join
+import sqlite3
 
-from nose import SkipTest
-from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in,
-                        assert_true)
+from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in)
 
+import semanticizest.parse_wikidump
 from semanticizest._wiki_dump_parser import (clean_text, extract_links,
                                              page_statistics, parse_dump,
                                              redirect, remove_links)
@@ -95,25 +94,42 @@ def test_page_statistics():
     assert_not_in('find And', ngrams)
 
 
+def test_parse_dump_ngrams():
+    db = sqlite3.connect(':memory:')
+    cur = db.cursor()
+    with open(join(dirname(semanticizest.parse_wikidump.__file__),
+                   "createtables.sql")) as create:
+        cur.executescript(create.read())
+
+    dump = join(dirname(abspath(__file__)),
+                'nlwiki-20140927-pages-articles-sample.xml')
+    parse_dump(dump, db, N=2)
+
+    ngram_count = dict(cur.execute('select ngram, tf from ngrams;'))
+    link_count = dict(cur.execute('select target, count from linkstats;'))
+
+    assert_in(ur'van München', ngram_count)
+    assert_in(u'Vrede van M\xfcnster', link_count)
+    #assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
+    assert_greater(link_count['AMX Index'], 0)
+
+
 def test_parse_dump():
-    raise SkipTest('needs to reworked with database access')
-    here = os.path.dirname(os.path.abspath(__file__))
-    dump = os.path.join(here, 'nlwiki-20140927-pages-articles-sample.xml')
-    link_count, ngram_count = parse_dump(dump, N=2)
+    db = sqlite3.connect(':memory:')
+    cur = db.cursor()
+    with open(join(dirname(semanticizest.parse_wikidump.__file__),
+                   "createtables.sql")) as create:
+        cur.executescript(create.read())
 
-    assert_true(isinstance(link_count, Mapping))
-    assert_true(isinstance(ngram_count, Mapping))
+    dump = join(dirname(abspath(__file__)),
+                'nlwiki-20140927-pages-articles-sample.xml')
+    parse_dump(dump, db, N=None)
 
-    assert_in(r'van München', ngram_count)
-    assert_in(('Heinrich Tessenow', 'Heinrich Tessenow'), link_count)
-    assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
+    ngram_count = dict(cur.execute('select ngram, tf from ngrams;'))
+    link_count = dict(cur.execute('select target, count from linkstats;'))
 
-    # Again, without the n-gram counting.
-    link_count = parse_dump(dump, N=None)
-
-    assert_true(isinstance(link_count, Mapping))
-    assert_in('Heinrich Tessenow,', ngram_count)
-    assert_in(('Heinrich Tessenow', 'Heinrich Tessenow'), link_count)
+    assert_in('Heinrich Tessenow', ngram_count)
+    assert_in('Heinrich Tessenow', link_count)
 
 
 def test_redirect():
