@@ -89,9 +89,10 @@ def test_page_statistics():
 
     assert_equal(dict(links), expected_links)
 
-    assert_in('And now,', ngrams)
+    assert_in('And now', ngrams)
     assert_not_in('Wikipedia We', ngrams)
     assert_not_in('find. And', ngrams)
+    assert_not_in('find And', ngrams)
 
 
 def test_parse_dump():
