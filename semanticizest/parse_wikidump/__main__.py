@@ -4,7 +4,7 @@ Usage:
     parse_wikidump [options] <dump> <model-filename>
 
 Options:
-    --ngram=order, -N=order Maximum order of the ngrams to extract [default: 7]
+    --ngram=order, -N order Maximum order of ngrams [default 7, None to disable]
     --help, -h              This help
 """
 from __future__ import print_function
@@ -19,7 +19,9 @@ from .._wiki_dump_parser import parse_dump
 def main(args):
     wikidump = args['<dump>']
     model_fname = args['<model-filename>']
-    ngram = int(args['--ngram'])
+    ngram = args['--ngram']
+    if ngram != None:
+        ngram = int(ngram)
 
     db = sqlite3.connect(model_fname)
     with open(join(dirname(__file__), "createtables.sql")) as f:
