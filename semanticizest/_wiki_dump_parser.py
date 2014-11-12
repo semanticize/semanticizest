@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from bz2 import BZ2File
 from collections import Counter
+from datetime import datetime
 import gzip
 from HTMLParser import HTMLParser
 from itertools import chain
@@ -224,9 +225,9 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
     if verbose:
         print("Processing articles:", file=sys.stderr)
-    for _, title, page, redirect in extract_pages(f):
-        if verbose:
-            print("    " + title, file=sys.stderr)
+    for i, (_, title, page, redirect) in enumerate(extract_pages(f), 1):
+        if verbose and i % 1000 == 0:
+            print(i, "at", datetime.now())
         if redirect is not None:
             redirects[title] = redirect
             continue
