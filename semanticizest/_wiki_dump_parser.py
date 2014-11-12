@@ -38,8 +38,8 @@ def extract_pages(f):
 
     Returns
     -------
-    pages : iterable over (int, string, string)
-        Generates (page_id, title, content) triples.
+    pages : iterable over (int, string, string, {string, None})
+        Generates (page_id, title, content, redirect_target) triples.
         In Python 2.x, may produce either str or unicode strings.
     """
     elems = (elem for _, elem in etree.iterparse(f, events=["end"]))
@@ -56,6 +56,7 @@ def extract_pages(f):
     text_path = "./{%(ns)s}revision/{%(ns)s}text" % ns_mapping
     id_path = "./{%(ns)s}id" % ns_mapping
     title_path = "./{%(ns)s}title" % ns_mapping
+    redir_path = "./{%(ns)s}redirect" % ns_mapping
 
     for elem in elems:
         if elem.tag == page_tag:
@@ -66,9 +67,11 @@ def extract_pages(f):
             if text is None:
                 # Empty article; these occur in Wikinews dumps.
                 continue
+            redir = elem.find(redir_path)
+            redir = redir.attrib['title'] if redir is not None else None
             yield (int(elem.find(id_path).text),
                    elem.find(title_path).text,
-                   text)
+                   text, redir)
 
             # Prune the element tree, as per
             # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
@@ -98,13 +101,6 @@ def extract_links(article):
         target = target.split('#')[0]
         anchor += extra
         yield target, anchor
-
-
-def redirect(page):
-    """Return redirect target for page, if any, else None."""
-    m = re.match(r"\#REDIRECT \s* \[\[ ([^]]+) \]\]", page,
-                 re.IGNORECASE | re.UNICODE | re.VERBOSE)
-    return m and m.group(1)
 
 
 _UNWANTED = re.compile(r"""
@@ -228,12 +224,11 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
     if verbose:
         print("Processing articles:", file=sys.stderr)
-    for _, title, page in extract_pages(f):
+    for _, title, page, redirect in extract_pages(f):
         if verbose:
             print("    " + title, file=sys.stderr)
-        target = redirect(page)
-        if target is not None:
-            redirects[title] = target
+        if redirect is not None:
+            redirects[title] = redirect
             continue
 
         link, ngram = page_statistics(page, N=N, tokenizer=tokenizer,

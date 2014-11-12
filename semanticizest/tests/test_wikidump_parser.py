@@ -12,7 +12,7 @@ import semanticizest.parse_wikidump
 from semanticizest.parse_wikidump.__main__ import main as parse_wikidump_main
 from semanticizest._wiki_dump_parser import (clean_text, extract_links,
                                              page_statistics, parse_dump,
-                                             redirect, remove_links)
+                                             remove_links)
 
 
 # Straight from nlwiki: a {| {| |} table (works in MediaWiki!)
@@ -149,10 +149,6 @@ def test_parse_wikidump():
         actual = list(cur.execute('select count(*) from ngrams;'))[0][0]
         expected = 22860
         assert_equal(actual, expected)
-
-
-def test_redirect():
-    assert_equal(redirect("#ReDiReCt [[frob]] {{R from redirect}}"), "frob")
 
 
 def test_remove_links():
