@@ -55,6 +55,10 @@ def test_extract_links():
     assert_equal(first_link("[[baz#quux|bla]]"), ("Baz", "bla"))
     assert_equal(first_link("[[FOO_BAR|foo bar]]"), ("FOO BAR", "foo bar"))
 
+    # We're not interested in section links
+    assert_equal(first_link("[[#Some section|elsewhere]] [[other_article]]"),
+                 ("Other article", "other_article"))
+
     # This construct appears in enwiki for chemical formulae etc., but also in
     # nlwiki (and dewiki?) for more general compound nouns. The current
     # handling may not be exactly what we want; any fix should update the test
