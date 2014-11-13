@@ -270,7 +270,7 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
         db.commit()
 
     if verbose:
-        print("Processing redirects...\n", file=sys.stderr)
+        print("Processing redirects...", file=sys.stderr)
     for redir, target in redirects.items():
         for anchor, count in c.execute('''select ngram_id, count from linkstats
                                           where target = ?''', [redir]):
@@ -279,6 +279,9 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
                          where target = ? and ngram_id = ?''',
                       (count, target, anchor))
 
-        c.execute('delete from linkstats where target = ?', [redir])
+    c.executemany('delete from linkstats where target = ?',
+                  ([redir] for redir in redirects))
+    if verbose:
+        print("Done at", datetime.now())
 
     db.commit()

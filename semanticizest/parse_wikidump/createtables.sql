@@ -17,4 +17,5 @@ create table linkstats (
     foreign key(ngram_id) references ngrams(id)
 );
 
+create index link_target on linkstats(target);
 create unique index target_anchor on linkstats(ngram_id, target);
