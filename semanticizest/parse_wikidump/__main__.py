@@ -20,7 +20,7 @@ def main(args):
     wikidump = args['<dump>']
     model_fname = args['<model-filename>']
     ngram = args['--ngram']
-    if ngram != None:
+    if ngram not in (None, "None"):
         ngram = int(ngram)
 
     db = sqlite3.connect(model_fname)
