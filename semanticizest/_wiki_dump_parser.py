@@ -99,7 +99,11 @@ def extract_links(article):
         if ':' in target:
             continue
 
-        target = target.split('#')[0]
+        # Remove section links and normalize to the format used in <redirect>
+        # elements: uppercase first character, spaces instead of underscores.
+        target = target.split('#')[0].replace('_', ' ')
+        if not target[0].isupper():
+            target = target[0].upper() + target[1:]
         anchor += extra
         yield target, anchor
 

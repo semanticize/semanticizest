@@ -46,13 +46,14 @@ def test_clean_text():
 def test_extract_links():
     first_link = compose(tuple, next, iter, extract_links)
 
-    assert_equal(first_link("[[foo|bar]]"), ("foo", "bar"))
-    assert_equal(first_link("[[foo]]"), ("foo", "foo"))
-    assert_equal(first_link("[[File:picture!]] [[foo]]"), ("foo", "foo"))
-    assert_equal(first_link("[[foo]]bar."), ("foo", "foobar"))
-    assert_equal(first_link("[[baz|foobar]];"), ("baz", "foobar"))
-    assert_equal(first_link("[[baz#quux]]"), ("baz", "baz#quux"))
-    assert_equal(first_link("[[baz#quux|bla]]"), ("baz", "bla"))
+    assert_equal(first_link("[[foo|bar]]"), ("Foo", "bar"))
+    assert_equal(first_link("[[foo]]"), ("Foo", "foo"))
+    assert_equal(first_link("[[File:picture!]] [[foo]]"), ("Foo", "foo"))
+    assert_equal(first_link("[[foo]]bar."), ("Foo", "foobar"))
+    assert_equal(first_link("[[baz|foobar]];"), ("Baz", "foobar"))
+    assert_equal(first_link("[[baz#quux]]"), ("Baz", "baz#quux"))
+    assert_equal(first_link("[[baz#quux|bla]]"), ("Baz", "bla"))
+    assert_equal(first_link("[[FOO_BAR|foo bar]]"), ("FOO BAR", "foo bar"))
 
     # This construct appears in enwiki for chemical formulae etc., but also in
     # nlwiki (and dewiki?) for more general compound nouns. The current
@@ -61,7 +62,7 @@ def test_extract_links():
     assert_equal(list(extract_links("[[Lithium|Li]][[Fluorine|F]]")),
                  [("Lithium", "Li"), ("Fluorine", "F")])
     assert_equal(list(extract_links("[[tera-|tera]][[becquerel]]s")),
-                 [("tera-", "tera"), ("becquerel", "becquerels")])
+                 [("Tera-", "tera"), ("Becquerel", "becquerels")])
 
 
 def test_page_statistics():
@@ -77,14 +78,14 @@ def test_page_statistics():
         And the [[book]] too.
     """
 
-    expected_links = {('syntax (to be parsed)', 'syntax'): 1,
+    expected_links = {('Syntax (to be parsed)', 'syntax'): 1,
                       ('Wikipedia', 'Wikipedia'): 1,
-                      ('hack', 'hack'): 1,
-                      ('text', 'text'): 2,
-                      ('book', 'book'): 2,
+                      ('Hack', 'hack'): 1,
+                      ('Text', 'text'): 2,
+                      ('Book', 'book'): 2,
                       ('Wikipedia', 'completely'): 1,
-                      ('hack', 'different'): 1,
-                      ('statistic', 'statistics'): 1}
+                      ('Hack', 'different'): 1,
+                      ('Statistic', 'statistics'): 1}
 
     links, ngrams = page_statistics(page, N=2)
 
