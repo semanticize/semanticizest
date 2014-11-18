@@ -25,10 +25,6 @@ sem = Semanticizer(link_count, N=2)
 
 
 def test_semanticizer():
-    # raise SkipTest()
-    # here = os.path.dirname(os.path.abspath(__file__))
-    # dump = os.path.join(here, 'nlwiki-20140927-pages-articles-sample.xml')
-
     text = """Aangezien de aarde een planeet is, kunnen de aardwetenschappen
 ook als een tak van de planetologie beschouwd worden. Aardwetenschappelijke
 kennis, met name geomorfologie, wordt bijvoorbeeld ook toegepast voor de
