@@ -152,7 +152,7 @@ def test_parse_wikidump():
         db = sqlite3.connect(model_file.name)
         cur = db.cursor()
         actual = list(cur.execute('select count(*) from ngrams;'))[0][0]
-        expected = 22860
+        expected = 22865
         assert_equal(actual, expected)
 
 

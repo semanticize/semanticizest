@@ -129,6 +129,7 @@ _UNWANTED = re.compile(r"""
 
 _unescape_entities = HTMLParser().unescape
 
+
 def clean_text(page):
     """Return the clean-ish running text parts of a page."""
     return re.sub(_UNWANTED, "", _unescape_entities(page))
@@ -274,6 +275,9 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
     for redir, target in redirects.items():
         for anchor, count in c.execute('''select ngram_id, count from linkstats
                                           where target = ?''', [redir]):
+            #TODO: combine the next two execute statements
+            c.execute('''insert or ignore into linkstats values (?, ?, 0)''',
+                      [anchor, target])
             c.execute('''update linkstats
                          set count = count + ?
                          where target = ? and ngram_id = ?''',
