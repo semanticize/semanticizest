@@ -285,6 +285,10 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
     c.executemany('delete from linkstats where target = ?',
                   ([redir] for redir in redirects))
+
+    if verbose:
+        print("Compressing database...", file=sys.stderr)
+    c.executescript('''drop index target_anchor; vacuum;''')
     if verbose:
         print("Done at", datetime.now())
 

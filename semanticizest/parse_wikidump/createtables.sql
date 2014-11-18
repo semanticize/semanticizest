@@ -18,4 +18,6 @@ create table linkstats (
 );
 
 create index link_target on linkstats(target);
+
+-- Temporary index; will be dropped after parser's done.
 create unique index target_anchor on linkstats(ngram_id, target);
