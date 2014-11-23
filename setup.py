@@ -27,7 +27,7 @@ setup(
     name="semanticizest",
     description="Semanticizer NG",
     long_description=readme(),
-    packages=["semanticizest"],
+    packages=["semanticizest", "semanticizest.parse_wikidump"],
     url="https://github.com/semanticize/semanticizest",
     version=__version__,
     classifiers=[
@@ -38,6 +38,7 @@ setup(
         "Topic :: Text Processing",
     ],
     install_requires=requirements(),
+    include_package_data=True,
     test_suite='nose.collector',
     tests_require=['nose'],
 )

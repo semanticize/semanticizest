@@ -1,3 +1,4 @@
 include LICENSE.txt
 include README.rst
 include semanticizest/tests/nlwiki-20140927-pages-articles-sample.xml
+include semanticizest/parse_wikidump/createtables.sql
