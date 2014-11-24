@@ -90,6 +90,7 @@ def extract_links(article):
     links = re.findall(r"\[\[ ([^]]+) \]\] (\w*)", article,
                        re.UNICODE | re.VERBOSE)
 
+    r = []
     for l, extra in links:
         if '|' in l:
             target, anchor = l.split('|', 1)
@@ -101,13 +102,15 @@ def extract_links(article):
 
         # Remove section links and normalize to the format used in <redirect>
         # elements: uppercase first character, spaces instead of underscores.
-        target = target.split('#')[0].replace('_', ' ')
+        target = target.split('#', 1)[0].replace('_', ' ')
         if not target:
             continue        # section link
         if not target[0].isupper():
             target = target[0].upper() + target[1:]
         anchor += extra
-        yield target, anchor
+        r.append((target, anchor))
+
+    return r
 
 
 _UNWANTED = re.compile(r"""
