@@ -233,7 +233,7 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
     if verbose:
         print("Processing articles:", file=sys.stderr)
     for i, (_, title, page, redirect) in enumerate(extract_pages(f), 1):
-        if verbose and i % 1000 == 0:
+        if verbose and i % 10000 == 0:
             print(i, "at", datetime.now())
         if redirect is not None:
             redirects[title] = redirect
@@ -247,11 +247,6 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
         tokens = chain(six.iteritems(ngram or {}),
                        ((anchor, 0) for _, anchor in six.iterkeys(link)))
         tokens = list(tokens)
-        #c.executemany('''insert or replace into ngrams (ngram, tf)
-                         #values (?, ? + coalesce ((select tf from ngrams
-                                                   #where ngram = ?), 0))''',
-                        #((ng, count, ng)
-                         #for ng, count in tokens)) # six.iteritems(ngram)))
         c.executemany('''insert or ignore into ngrams (ngram) values (?)''',
                       ((g,) for g, _ in tokens))
         c.executemany('''update ngrams set tf = tf + ?, df = df + 1
@@ -290,6 +285,6 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
         print("Compressing database...", file=sys.stderr)
     c.executescript('''drop index target_anchor; vacuum;''')
     if verbose:
-        print("Done at", datetime.now())
+        print("Done at", datetime.now(), file=sys.stderr)
 
     db.commit()
