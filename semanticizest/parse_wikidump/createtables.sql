@@ -1,4 +1,5 @@
 pragma foreign_keys = on;
+pragma journal_mode = off;
 
 drop table if exists linkstats;
 drop table if exists ngrams;
