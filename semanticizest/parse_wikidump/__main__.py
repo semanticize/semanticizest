@@ -26,9 +26,9 @@ def main(args):
     db = sqlite3.connect(model_fname)
     with open(join(dirname(__file__), "createtables.sql")) as f:
         create = f.read()
+
     c = db.cursor()
     c.executescript(create)
-    c.execute('pragma synchronous = off')
 
     parse_dump(wikidump, db, N=ngram, verbose=True)
     db.close()

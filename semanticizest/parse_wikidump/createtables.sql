@@ -1,5 +1,6 @@
 pragma foreign_keys = on;
 pragma journal_mode = off;
+pragma synchronous = off;
 
 drop table if exists linkstats;
 drop table if exists ngrams;
@@ -19,6 +20,3 @@ create table linkstats (
 );
 
 create index link_target on linkstats(target);
-
--- Temporary index; will be dropped after parser's done.
-create unique index target_anchor on linkstats(ngram_id, target);

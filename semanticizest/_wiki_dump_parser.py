@@ -233,6 +233,10 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
     c = db.cursor()
 
+    # Temporary index to speed up insertion
+    c.execute('''create unique index target_anchor
+                 on linkstats(ngram_id, target)''')
+
     if verbose:
         print("Processing articles:", file=sys.stderr)
     for i, (_, title, page, redirect) in enumerate(extract_pages(f), 1):
