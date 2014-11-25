@@ -1,13 +1,40 @@
 Algorithms & implementation details
 ===================================
 
+Entity linking statistics
+-------------------------
+
+Many approaches to entity linking exist; this section gives a short overview
+of what is possible with semanticizest. It is intended as a reference guide;
+you don't need to memorize all this to use semanticizest.
+
+All entity linking strategies use statistics gathered from Wikipedia.
+These statistics concern:
+
+- *Wikilinks*, or "links" for short. These are the familiar blue and red
+  hyperlinks between Wikipedia articles.
+  External links (URLs) are not wikilinks,
+  so they are not involved in entity linking.
+
+- *Entities*. An entity is any Wikipedia article linked to using a wikilink
+  (by "article" we mean a page in the Wikipedia "main" namespace,
+  the encyclopedic content).
+  Entities are represented by the titles or URLs of the links' targets.
+  That means all articles in a Wikipedia are potential entities,
+  but pages that are never linked to are not considered entities.
+  However, all "red links" (links to non-existent pages) are considered
+  entities, so there is no one-to-one mapping between articles and entities.
+
+- *Anchors* are the link texts in wikilinks.
+  A link often, but not always, has the target page's title as the link text.
+  By picking up all the anchors for an entity (target page),
+  semanticizest knows that "Napoleon Bonaparte" is common way of referring
+  to what Wikipedia calls "Napoleon" (the title of the page about Bonaparte).
+
 .. note:: Concepts that need explanation/clarification:
 
-          - link
-          - entity
           - concept
           - context
-          - anchor
           - sense
 
 Formulas for determining link candidates and ranking candidates. These
@@ -75,3 +102,13 @@ two steps correspond exactly to the baseline retrieval model of
 .. [Odijk2013] Odijk, Daan, Edgar Meij, and Maarten De Rijke. "Feeding
                the second screen: Semantic linking based on
                subtitles." OAIR, 2013.
+
+
+Data structures
+---------------
+
+.. note::
+
+    Fill me in with enough details of the SQLite tables and count-min sketches
+    to explain potential wtf's. We don't need to repeat the database schema
+    here because it's an implementation detail.
