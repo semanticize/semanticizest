@@ -12,6 +12,7 @@ def ngrams_with_pos(lst, N):
         for n in xrange(1, 1 + min(N, len(lst) - start)):
             yield start, start + n, join(lst[start:start + n])
 
+
 def ngrams(lst, N):
     return (ng for _, _, ng in ngrams_with_pos(lst, N))
 

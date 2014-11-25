@@ -5,7 +5,8 @@ Usage:
     parse_wikidump [options] --download=<wikiname> <dump> <model-filename>
 
 Options:
-    --ngram=order, -N order Maximum order of ngrams [default 7, None to disable]
+    --ngram=order, -N order Maximum order of ngrams
+                      [default 7, None to disable]
     --help, -h              This help
 """
 from __future__ import print_function

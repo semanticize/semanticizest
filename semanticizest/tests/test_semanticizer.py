@@ -1,27 +1,16 @@
 import re
-import sqlite3
-from os.path import join, dirname, abspath
+from os.path import join, dirname
 
 from nose.tools import assert_equal
 
-import semanticizest.parse_wikidump
 from semanticizest import Semanticizer
-from semanticizest._wiki_dump_parser import parse_dump
+from semanticizest._wiki_dump_parser import create_model, load_model
 
-#ugh...
-db = sqlite3.connect(':memory:')
-cur = db.cursor()
-with open(join(dirname(semanticizest.parse_wikidump.__file__),
-               "createtables.sql")) as create:
-    cur.executescript(create.read())
-dump = join(dirname(abspath(__file__)),
-            'nlwiki-20140927-pages-articles-sample.xml')
-parse_dump(dump, db, N=2)
-link_count = {(t, a): c for
-              t, a, c in cur.execute('select target, ngram as anchor, count '
-                                     'from linkstats, ngrams '
-                                     'where ngram_id = ngrams.id;')}
-sem = Semanticizer(link_count, N=2)
+
+# create in-memory db
+db = create_model(join(dirname(__file__),
+                       'nlwiki-20140927-pages-articles-sample.xml'))
+sem = Semanticizer(load_model(db), N=2)
 
 
 def test_semanticizer():
