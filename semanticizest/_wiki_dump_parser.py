@@ -239,7 +239,8 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
                  on linkstats(ngram_id, target)''')
 
     if verbose:
-        print("Processing articles:", file=sys.stderr)
+        start = datetime.now()
+        print("Processing articles...", file=sys.stderr)
     for i, (_, title, page, redirect) in enumerate(extract_pages(f), 1):
         if verbose and i % 10000 == 0:
             print(i, "at", datetime.now())
@@ -290,9 +291,12 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
                   ([redir] for redir in redirects))
 
     if verbose:
-        print("Compressing database...", file=sys.stderr)
+        print("Finalizing database...", file=sys.stderr)
     c.executescript('''drop index target_anchor; vacuum;''')
     if verbose:
-        print("Done at", datetime.now(), file=sys.stderr)
+        now = datetime.now()
+        print("Done at", now, "\n",
+              "Processed", i, "articles in", now - start,
+              file=sys.stderr)
 
     db.commit()
