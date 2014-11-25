@@ -171,15 +171,16 @@ def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
     clean = clean_text(page)
     link_counts = Counter(extract_links(clean))
 
-    no_links = remove_links(clean)
-    if sentence_splitter is None:
-        sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links,
-                             re.MULTILINE | re.UNICODE)
-    else:
-        sentences = [sentence for paragraph in re.split('\n+', no_links)
-                              for sentence in paragraph]
-
     if N:
+        no_links = remove_links(clean)
+
+        if sentence_splitter is None:
+            sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links,
+                                 re.MULTILINE | re.UNICODE)
+        else:
+            sentences = [sentence for paragraph in re.split('\n+', no_links)
+                                  for sentence in paragraph]
+
         if tokenizer is None:
             tokenizer = re.compile(r'\w+', re.UNICODE).findall
         all_ngrams = chain.from_iterable(ngrams(tokenizer(sentence), N)
