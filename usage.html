@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Semanticizest description &mdash; semanticizest 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="semanticizest 0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">semanticizest 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="semanticizest-description">
+<h1>Semanticizest description<a class="headerlink" href="#semanticizest-description" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-s-up-with-the-name">
+<h2>What&#8217;s up with the name?<a class="headerlink" href="#what-s-up-with-the-name" title="Permalink to this headline">¶</a></h2>
+<p>Semanticize, semanticizer (previous version), semanticizest (current
+(re-)implementation). Yes we&#8217;re bad at coming up with names.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Wishful thinking for now...</p>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">semanticizest</span> <span class="kn">import</span> <span class="n">Semanticizer</span><span class="p">,</span> <span class="n">store_model</span><span class="p">,</span> <span class="n">load_model</span>
+
+<span class="c"># Read wikipedia dump, create model and store it in a file</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="s">&#39;lawiki-20140931-pages-articles.xml.bz2&#39;</span><span class="p">)</span>
+<span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s">&#39;lawiki-20140931.model&#39;</span><span class="p">)</span>
+
+<span class="c"># Load a stored model from file and initialize a semanticizer</span>
+<span class="n">semanticizer</span> <span class="o">=</span> <span class="n">Semanticizer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">load_model</span><span class="p">(</span><span class="s">&#39;lawiki-20140931.model&#39;</span><span class="p">))</span>
+
+<span class="c"># Semanticize text to get a list of links</span>
+<span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Lorem ipsum, sic dolor amet...&quot;&quot;&quot;</span>
+<span class="n">links</span> <span class="o">=</span> <span class="n">semanticizer</span><span class="o">.</span><span class="n">semanticize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="algorithms-implementation-details">
+<h2>Algorithms &amp; Implementation Details<a class="headerlink" href="#algorithms-implementation-details" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Concepts that need explanation/clarification:</p>
+<ul class="last simple">
+<li>link</li>
+<li>entity</li>
+<li>concept</li>
+<li>context</li>
+<li>anchor</li>
+<li>sense</li>
+</ul>
+</div>
+<p>Formulas for determining link candidates and ranking candidates. These
+two steps correspond exactly to the baseline retrieval model of
+<a class="reference internal" href="#odijk2013" id="id1">[Odijk2013]</a>.</p>
+<ul>
+<li><p class="first"><em>prior probability</em> determines how likely it is that anchor text &#8216;a&#8217;
+links to Wikipedia article &#8216;w&#8217;, also known as <em>commonness</em>, &#8220;the
+extent to which each sense is well-known&#8221; <a class="reference internal" href="#medelyan2008" id="id2">[Medelyan2008]</a>.</p>
+<div class="math">
+<p><img src="_images/math/4ad107a5b9e5d910d577925354075246eb185f38.png" alt="P_{prior}(w|a) = \frac{|lnk_{a,w}|}{|lnk_a|}"/></p>
+</div><p>here &#8216;w&#8217; is a Wikipedia article, &#8216;a&#8217; is the anchor text, <img class="math" src="_images/math/f690002b8796a4bd84aa0a21d1031e0ee540fc20.png" alt="|.|"/>
+is (multi)set cardinality, &#8216;lnk_{a,w}&#8217; is the multiset of links with
+anchor text &#8216;a&#8217; and target &#8216;w&#8217;, similarly &#8216;lnk_a&#8217; is the multiset of
+links with anchor text &#8216;a&#8217;.</p>
+</li>
+<li><p class="first"><em>keyphraseness</em> &#8220;is defined as the number of Wikipedia articles that
+use it as an anchor, divided by the number of articles that mention
+it at all.&#8221; <a class="reference internal" href="#milne2008" id="id3">[Milne2008]</a> &#8220;[is an] estimate of the probability that a
+phrase is selected as a keyphrase for a document&#8221; <a class="reference internal" href="#mihalcea2007" id="id4">[Mihalcea2007]</a>,
+&#8220;the probability of being a [link] candidate&#8221; <a class="reference internal" href="#medelyan2008" id="id5">[Medelyan2008]</a></p>
+<div class="math">
+<p><img src="_images/math/0786b488afd7cfb18af5a854d9dffb90b67ba975.png" alt="P_{keyphrase}(a) = \frac{DF(lnk_a)}{DF(a)}"/></p>
+</div><p>where &#8216;a&#8217; is the anchor text (an n-gram of one or more terms),
+&#8216;DF(.)&#8217; denotes the document frequency in Wikipedia, &#8216;DF(lnk_a)&#8217;
+is the number of Wikipedia articles where &#8216;a&#8217; is used as the anchor
+text of a link and &#8216;DF(a)&#8217; the number of Wikipedia articles
+containing the text &#8216;a&#8217; at all.</p>
+</li>
+<li><p class="first"><em>link probability</em> is the same as &#8216;keyphraseness&#8217;, except that link
+probability uses term frequencies instead of document frequencies
+(&#8220;we determine this probability based on all occurrences, also
+including multiple occurrences in an article&#8221; <a class="reference internal" href="#meij2012" id="id6">[Meij2012]</a>)</p>
+<div class="math">
+<p><img src="_images/math/ad7b8c733ee7b303fcda786050f7100fc4b5e1fd.png" alt="P_{link}(a) = \frac{|lnk_a|}{|a|}"/></p>
+</div></li>
+<li><p class="first"><em>sense probability</em> &#8220;an estimate for the probability that an n-gram
+is used as an anchor linking to Wikipedia article w.&#8221; <a class="reference internal" href="#odijk2013" id="id7">[Odijk2013]</a></p>
+<div class="math">
+<p><img src="_images/math/ed9458046b9c8efe2b5eaa421f92c285bef0dfef.png" alt="P_{sense}(w|a) = \frac{|lnk_{a,w}|}{|a|}"/></p>
+</div></li>
+</ul>
+<table class="docutils citation" frame="void" id="mihalcea2007" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[Mihalcea2007]</a></td><td>Mihalcea, Rada, and Andras Csomai. &#8220;Wikify!: linking
+documents to encyclopedic knowledge.&#8221; Proceedings of
+the sixteenth ACM conference on Conference on
+information and knowledge management. ACM, 2007.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="medelyan2008" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Medelyan2008]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> Medelyan, Olena, Ian H. Witten, and David
+Milne. &#8220;Topic indexing with Wikipedia.&#8221; Proceedings
+of the AAAI WikiAI workshop. 2008.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="milne2008" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[Milne2008]</a></td><td>Milne, David, and Ian H. Witten. &#8220;Learning to link with
+wikipedia.&#8221; Proceedings of the 17th ACM conference on
+Information and knowledge management. ACM, 2008.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="meij2012" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[Meij2012]</a></td><td>Meij, Edgar, Wouter Weerkamp, and Maarten de
+Rijke. &#8220;Adding semantics to microblog posts.&#8221; ACM, 2012.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="odijk2013" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Odijk2013]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> Odijk, Daan, Edgar Meij, and Maarten De Rijke. &#8220;Feeding
+the second screen: Semantic linking based on
+subtitles.&#8221; OAIR, 2013.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Semanticizest description</a><ul>
+<li><a class="reference internal" href="#what-s-up-with-the-name">What&#8217;s up with the name?</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#algorithms-implementation-details">Algorithms &amp; Implementation Details</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">semanticizest 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, NLeSC/UvA.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

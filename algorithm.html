@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Algorithms &amp; implementation details &mdash; semanticizest 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="semanticizest 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to semanticizest’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to semanticizest’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">semanticizest 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="algorithms-implementation-details">
+<h1>Algorithms &amp; implementation details<a class="headerlink" href="#algorithms-implementation-details" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="entity-linking-statistics">
+<h2>Entity linking statistics<a class="headerlink" href="#entity-linking-statistics" title="Permalink to this headline">¶</a></h2>
+<p>Many approaches to entity linking exist; this section gives a short overview
+of what is possible with semanticizest. It is intended as a reference guide;
+you don&#8217;t need to memorize all this to use semanticizest.</p>
+<p>All entity linking strategies use statistics gathered from Wikipedia.
+These statistics concern:</p>
+<ul>
+<li><p class="first"><em>Wikilinks</em>, or &#8220;links&#8221; for short. These are the familiar blue and red
+hyperlinks between Wikipedia articles.
+External links (URLs) are not wikilinks,
+so they are not involved in entity linking.</p>
+<p>A link has a <em>target</em> and an <em>anchor text</em>, or anchor for short.
+The target is a page title, which may (blue link) or may not (red link)
+refer to an actual page in the Wikipedia.
+The anchor is the text of the link as it appears in the page where the
+link was found.
+Often, but not always, the target page&#8217;s title and the anchor coincide.
+By picking up all the anchors for an entity (target page),
+semanticizest knows that &#8220;Napoleon Bonaparte&#8221; is common way of referring
+to what Wikipedia calls &#8220;Napoleon&#8221; (the title of the page about Bonaparte).</p>
+</li>
+<li><p class="first"><em>Entities</em>. An entity is any link target that lives/would live
+in the Wikipedia &#8220;main&#8221; namespace, the encyclopedic content,
+if the link is/were blue.</p>
+<p>Entities are represented by the titles or URLs of the links&#8217; targets.
+That means all articles in a Wikipedia are potential entities,
+but pages that are never linked to are not considered entities.
+However, all &#8220;red links&#8221; (links to non-existent pages) are considered
+entities, so there is no one-to-one mapping between articles and entities.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Concepts that need explanation/clarification:</p>
+<ul class="last simple">
+<li>sense</li>
+</ul>
+</div>
+<p>Formulas for determining link candidates and ranking candidates. These
+two steps correspond exactly to the baseline retrieval model of
+<a class="reference internal" href="#odijk2013" id="id1">[Odijk2013]</a>.</p>
+<ul>
+<li><p class="first"><em>Prior probability</em> determines how likely it is that anchor text <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/>
+links to Wikipedia article <img class="math" src="_images/math/8659700e6646cd91bc02c32affaa5ec046ee9935.png" alt="w"/>, also known as <em>commonness</em>, &#8220;the
+extent to which each sense is well-known&#8221; <a class="reference internal" href="#medelyan2008" id="id2">[Medelyan2008]</a>.</p>
+<div class="math">
+<p><img src="_images/math/4ad107a5b9e5d910d577925354075246eb185f38.png" alt="P_{prior}(w|a) = \frac{|lnk_{a,w}|}{|lnk_a|}"/></p>
+</div><p>here <img class="math" src="_images/math/8659700e6646cd91bc02c32affaa5ec046ee9935.png" alt="w"/> is a Wikipedia article, <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/> is the anchor text,
+<img class="math" src="_images/math/f690002b8796a4bd84aa0a21d1031e0ee540fc20.png" alt="|.|"/> is (multi)set cardinality, <img class="math" src="_images/math/070520e037375db2bdded4626412dd7d39d4c141.png" alt="lnk_{a,w}"/> is the multiset of
+links with anchor text <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/> and target <img class="math" src="_images/math/8659700e6646cd91bc02c32affaa5ec046ee9935.png" alt="w"/>,
+and <img class="math" src="_images/math/44e2ead3fc0672ad891864122df7e14ec1dbf891.png" alt="lnk_a"/> is the multiset of links with anchor text <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/>.</p>
+</li>
+<li><p class="first"><em>Keyphraseness</em> &#8220;is defined as the number of Wikipedia articles that
+use it as an anchor, divided by the number of articles that mention
+it at all.&#8221; <a class="reference internal" href="#milne2008" id="id3">[Milne2008]</a> &#8220;[is an] estimate of the probability that a
+phrase is selected as a keyphrase for a document&#8221; <a class="reference internal" href="#mihalcea2007" id="id4">[Mihalcea2007]</a>,
+&#8220;the probability of being a [link] candidate&#8221; <a class="reference internal" href="#medelyan2008" id="id5">[Medelyan2008]</a></p>
+<div class="math">
+<p><img src="_images/math/0786b488afd7cfb18af5a854d9dffb90b67ba975.png" alt="P_{keyphrase}(a) = \frac{DF(lnk_a)}{DF(a)}"/></p>
+</div><p>where <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/> is the anchor text (an n-gram of one or more terms),
+<img class="math" src="_images/math/9825ce1b230c45d62615447080ec45cce001c88c.png" alt="DF(.)"/> denotes the document frequency in Wikipedia, <img class="math" src="_images/math/3a513ba3b2de28474ecdf6743fdbf30b6b5bab63.png" alt="DF(lnk_a)"/>
+is the number of Wikipedia articles where <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/> is used as the anchor
+text of a link and <img class="math" src="_images/math/90ea02f0ac7d22d746f328211240fdb7b819f248.png" alt="DF(a)"/> the number of Wikipedia articles
+containing the text <img class="math" src="_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/> at all.</p>
+</li>
+<li><p class="first"><em>Link probability</em> is the same as &#8216;keyphraseness&#8217;, except that link
+probability uses term frequencies instead of document frequencies
+(&#8220;we determine this probability based on all occurrences, also
+including multiple occurrences in an article&#8221; <a class="reference internal" href="#meij2012" id="id6">[Meij2012]</a>):</p>
+<div class="math">
+<p><img src="_images/math/ad7b8c733ee7b303fcda786050f7100fc4b5e1fd.png" alt="P_{link}(a) = \frac{|lnk_a|}{|a|}"/></p>
+</div></li>
+<li><p class="first"><em>Sense probability</em> &#8220;an estimate for the probability that an n-gram
+is used as an anchor linking to Wikipedia article <img class="math" src="_images/math/8659700e6646cd91bc02c32affaa5ec046ee9935.png" alt="w"/>&#8221; <a class="reference internal" href="#odijk2013" id="id7">[Odijk2013]</a>:</p>
+<div class="math">
+<p><img src="_images/math/ed9458046b9c8efe2b5eaa421f92c285bef0dfef.png" alt="P_{sense}(w|a) = \frac{|lnk_{a,w}|}{|a|}"/></p>
+</div></li>
+</ul>
+<table class="docutils citation" frame="void" id="mihalcea2007" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[Mihalcea2007]</a></td><td>Mihalcea, Rada, and Andras Csomai. &#8220;Wikify!: linking
+documents to encyclopedic knowledge.&#8221; Proceedings of
+the sixteenth ACM conference on Conference on
+information and knowledge management. ACM, 2007.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="medelyan2008" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Medelyan2008]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> Medelyan, Olena, Ian H. Witten, and David
+Milne. &#8220;Topic indexing with Wikipedia.&#8221; Proceedings
+of the AAAI WikiAI workshop. 2008.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="milne2008" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[Milne2008]</a></td><td>Milne, David, and Ian H. Witten. &#8220;Learning to link with
+wikipedia.&#8221; Proceedings of the 17th ACM conference on
+Information and knowledge management. ACM, 2008.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="meij2012" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[Meij2012]</a></td><td>Meij, Edgar, Wouter Weerkamp, and Maarten de
+Rijke. &#8220;Adding semantics to microblog posts.&#8221; ACM, 2012.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="odijk2013" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Odijk2013]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> Odijk, Daan, Edgar Meij, and Maarten De Rijke. &#8220;Feeding
+the second screen: Semantic linking based on
+subtitles.&#8221; OAIR, 2013.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-structures">
+<h2>Data structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Fill me in with enough details of the SQLite tables and count-min sketches
+to explain potential wtf&#8217;s. We don&#8217;t need to repeat the database schema
+here because it&#8217;s an implementation detail.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Algorithms &amp; implementation details</a><ul>
+<li><a class="reference internal" href="#entity-linking-statistics">Entity linking statistics</a></li>
+<li><a class="reference internal" href="#data-structures">Data structures</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to semanticizest&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/algorithm.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to semanticizest’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">semanticizest 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, NLeSC/UvA.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
