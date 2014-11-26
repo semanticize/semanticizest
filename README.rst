@@ -30,6 +30,12 @@ To train a semanticizer, download a Wikipedia database dump from
 The result will be a semanticizer model (in SQLite 3 format, if you must know).
 
 
+Documentation
+-------------
+
+The documentation can be found at http://semanticizest.readthedocs.org/
+
+
 Copyright and license
 ---------------------
 
