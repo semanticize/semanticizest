@@ -55,6 +55,19 @@ def test_extract_links():
     assert_equal(first_link("[[baz#quux|bla]]"), ("Baz", "bla"))
     assert_equal(first_link("[[FOO_BAR|foo bar]]"), ("FOO BAR", "foo bar"))
 
+    # Links like these commonly occur in nlwiki (and presumably dewiki and
+    # other compounding languages):
+    assert_equal(first_link("foo[[baz|bar]]"), ("Baz", "foobar"))
+
+    # MediaWiki only considers alphabetic characters outside [[]] part of the
+    # anchor.
+    assert_equal(first_link("foo-[[bar]]"), ("Bar", "bar"))
+    assert_equal(first_link("[[bar]]/baz"), ("Bar", "bar"))
+    # XXX The following are broken. They do occur in the wild, e.g.,
+    # -18[[Celsius|°C]] and 700[[Megabyte|MB]]-cd (found in nlwiki dump).
+    #assert_equal(first_link("[[bar]]0"), ("Bar", "bar"))
+    #assert_equal(first_link("[[bar]]_"), ("Bar", "bar"))
+
     # We're not interested in section links
     assert_equal(first_link("[[#Some section|elsewhere]] [[other_article]]"),
                  ("Other article", "other_article"))

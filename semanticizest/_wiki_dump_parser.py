@@ -87,11 +87,11 @@ def extract_links(article):
 
     Returns an iterable over (target, anchor) pairs.
     """
-    links = re.findall(r"\[\[ ([^]]+) \]\] (\w*)", article,
+    links = re.findall(r"(\w*) \[\[ ([^]]+) \]\] (\w*)", article,
                        re.UNICODE | re.VERBOSE)
 
     r = []
-    for l, extra in links:
+    for before, l, after in links:
         if '|' in l:
             target, anchor = l.split('|', 1)
         else:
@@ -107,7 +107,7 @@ def extract_links(article):
             continue        # section link
         if not target[0].isupper():
             target = target[0].upper() + target[1:]
-        anchor += extra
+        anchor = before + anchor + after
         r.append((target, anchor))
 
     return r
