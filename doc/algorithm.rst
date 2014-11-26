@@ -16,25 +16,28 @@ These statistics concern:
   External links (URLs) are not wikilinks,
   so they are not involved in entity linking.
 
-- *Entities*. An entity is any Wikipedia article linked to using a wikilink
-  (by "article" we mean a page in the Wikipedia "main" namespace,
-  the encyclopedic content).
+  A link has a *target* and an *anchor text*, or anchor for short.
+  The target is a page title, which may (blue link) or may not (red link)
+  refer to an actual page in the Wikipedia.
+  The anchor is the text of the link as it appears in the page where the
+  link was found.
+  Often, but not always, the target page's title and the anchor coincide.
+  By picking up all the anchors for an entity (target page),
+  semanticizest knows that "Napoleon Bonaparte" is common way of referring
+  to what Wikipedia calls "Napoleon" (the title of the page about Bonaparte).
+
+- *Entities*. An entity is any link target that lives/would live
+  in the Wikipedia "main" namespace, the encyclopedic content,
+  if the link is/were blue.
+
   Entities are represented by the titles or URLs of the links' targets.
   That means all articles in a Wikipedia are potential entities,
   but pages that are never linked to are not considered entities.
   However, all "red links" (links to non-existent pages) are considered
   entities, so there is no one-to-one mapping between articles and entities.
 
-- *Anchors* are the link texts in wikilinks.
-  A link often, but not always, has the target page's title as the link text.
-  By picking up all the anchors for an entity (target page),
-  semanticizest knows that "Napoleon Bonaparte" is common way of referring
-  to what Wikipedia calls "Napoleon" (the title of the page about Bonaparte).
-
 .. note:: Concepts that need explanation/clarification:
 
-          - concept
-          - context
           - sense
 
 Formulas for determining link candidates and ranking candidates. These
