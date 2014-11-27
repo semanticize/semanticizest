@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="semanticizest 0.1 documentation" href="#" />
-    <link rel="next" title="Algorithms &amp; implementation details" href="algorithm.html" /> 
+    <link rel="next" title="API Reference" href="api.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +34,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="algorithm.html" title="Algorithms &amp; implementation details"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
              accesskey="N">next</a> |</li>
         <li><a href="#">semanticizest 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -50,22 +53,27 @@
 <p>semanticizest (Semanticizer, STandalone) is a library for entity linking.</p>
 <div class="section" id="quick-usage">
 <h2>Quick usage<a class="headerlink" href="#quick-usage" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Wishful thinking for now...</p>
+<p>Import the required modules:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">semanticizest</span> <span class="kn">import</span> <span class="n">Semanticizer</span>
+</pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">semanticizest</span> <span class="kn">import</span> <span class="n">Semanticizer</span><span class="p">,</span> <span class="n">store_model</span><span class="p">,</span> <span class="n">load_model</span>
-
-<span class="c"># Read wikipedia dump, create model and store it in a file</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="s">&#39;lawiki-20140931-pages-articles.xml.bz2&#39;</span><span class="p">)</span>
-<span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s">&#39;lawiki-20140931.model&#39;</span><span class="p">)</span>
-
-<span class="c"># Load a stored model from file and initialize a semanticizer</span>
-<span class="n">semanticizer</span> <span class="o">=</span> <span class="n">Semanticizer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">load_model</span><span class="p">(</span><span class="s">&#39;lawiki-20140931.model&#39;</span><span class="p">))</span>
-
-<span class="c"># Semanticize text to get a list of links</span>
-<span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Lorem ipsum, sic dolor amet...&quot;&quot;&quot;</span>
-<span class="n">links</span> <span class="o">=</span> <span class="n">semanticizer</span><span class="o">.</span><span class="n">semanticize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<p>Load the model from disk:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sem</span> <span class="o">=</span> <span class="n">Semanticizer</span><span class="p">(</span><span class="s">&#39;liwiki.model&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set up a piece of sample text and tokenize it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;&#39;ne Donjon is &#39;ne middeleëuwse, zjwaore, verdedigingstaore, meistal geboewd óp &#39;ne hoage heuvel, de opperhaof, dae deil oetmaak van &#39;n motte.&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">toks</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;\w+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Feed the tokens to the semanticizer to get the candidates:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">sem</span><span class="o">.</span><span class="n">all_candidates</span><span class="p">(</span><span class="n">toks</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">cand</span>
+<span class="go">(7, 8, u&#39;Taore (boewwerk)&#39;, 1.0)</span>
+<span class="go">(13, 14, u&#39;Heuvel&#39;, 1.0)</span>
+<span class="go">(15, 16, u&#39;Opperhaof&#39;, 1.0)</span>
+<span class="go">(21, 22, u&#39;Motte&#39;, 1.0)</span>
 </pre></div>
 </div>
 </div>
@@ -74,6 +82,9 @@
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithms &amp; implementation details</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="algorithm.html#entity-linking-statistics">Entity linking statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="algorithm.html#data-structures">Data structures</a></li>
@@ -120,8 +131,8 @@
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="algorithm.html"
-                        title="next chapter">Algorithms &amp; implementation details</a></p>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">API Reference</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -151,7 +162,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="algorithm.html" title="Algorithms &amp; implementation details"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
              >next</a> |</li>
         <li><a href="#">semanticizest 0.1 documentation</a> &raquo;</li> 
       </ul>

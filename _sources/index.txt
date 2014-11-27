@@ -12,23 +12,32 @@ semanticizest (Semanticizer, STandalone) is a library for entity linking.
 Quick usage
 -----------
 
-.. NOTE::
-    Wishful thinking for now...
-
-.. code:: python
-
-    from semanticizest import Semanticizer, store_model, load_model
-
+.. code:: bash
     # Read wikipedia dump, create model and store it in a file
-    model = create_model('lawiki-20140931-pages-articles.xml.bz2')
-    store_model(model, 'lawiki-20140931.model')
+    python -m semanticizest.parse_wikidump --download liwiki liwiki.xml.bz2 liwiki.model
 
-    # Load a stored model from file and initialize a semanticizer
-    semanticizer = Semanticizer(model=load_model('lawiki-20140931.model'))
+Import the required modules::
 
-    # Semanticize text to get a list of links
-    text = """Lorem ipsum, sic dolor amet..."""
-    links = semanticizer.semanticize(text)
+    >>> import re
+    >>> from semanticizest import Semanticizer
+
+Load the model from disk::
+
+    >>> sem = Semanticizer('liwiki.model')
+
+Set up a piece of sample text and tokenize it::
+
+    >>> text = """'ne Donjon is 'ne middeleëuwse, zjwaore, verdedigingstaore, meistal geboewd óp 'ne hoage heuvel, de opperhaof, dae deil oetmaak van 'n motte."""
+    >>> toks = re.findall('\w+', text)
+
+Feed the tokens to the semanticizer to get the candidates::
+
+    >>> for cand in sem.all_candidates(toks):
+    ...     print cand
+    (7, 8, u'Taore (boewwerk)', 1.0)
+    (13, 14, u'Heuvel', 1.0)
+    (15, 16, u'Opperhaof', 1.0)
+    (21, 22, u'Motte', 1.0)
 
 
 Contents
@@ -37,6 +46,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   api
    algorithm
 
 
