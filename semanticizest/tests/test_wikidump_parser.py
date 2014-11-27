@@ -10,9 +10,9 @@ from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in)
 
 import semanticizest.parse_wikidump
 from semanticizest.parse_wikidump.__main__ import main as parse_wikidump_main
-from semanticizest._wiki_dump_parser import (clean_text, extract_links,
-                                             page_statistics, parse_dump,
-                                             remove_links)
+from semanticizest.parse_wikidump import (clean_text, extract_links,
+                                          page_statistics, parse_dump,
+                                          remove_links)
 
 
 # Straight from nlwiki: a {| {| |} table (works in MediaWiki!)

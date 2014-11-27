@@ -4,7 +4,7 @@ from os.path import join, dirname
 from nose.tools import assert_equal
 
 from semanticizest import Semanticizer
-from semanticizest._wiki_dump_parser import create_model, load_model
+from semanticizest.parse_wikidump import create_model, load_model
 
 
 # create in-memory db

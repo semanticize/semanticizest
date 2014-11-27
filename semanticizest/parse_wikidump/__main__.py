@@ -21,7 +21,7 @@ from six.moves.urllib.request import urlopen
 
 from docopt import docopt
 
-from .._wiki_dump_parser import parse_dump
+from . import parse_dump
 
 
 logger = logging.getLogger('semanticizest')
