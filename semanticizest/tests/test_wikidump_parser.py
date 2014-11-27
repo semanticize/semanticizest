@@ -157,10 +157,7 @@ def test_parse_wikidump():
     dump = join(dirname(abspath(__file__)),
                 'nlwiki-20140927-pages-articles-sample.xml')
     with tempfile.NamedTemporaryFile(tmpfile) as model_file:
-        args = {'--ngram': 2,
-                '<model-filename>': model_file.name,
-                '<dump>': dump}
-        parse_wikidump_main(args)
+        parse_wikidump_main(["--ngram=2", dump, model_file.name])
 
         db = sqlite3.connect(model_file.name)
         cur = db.cursor()

@@ -33,6 +33,8 @@ DUMP_TEMPLATE = (
 
 
 def main(args):
+    args = docopt(__doc__, args)
+
     wikidump = args['<dump>']
     if args["--download"]:
         url = DUMP_TEMPLATE.format(args["--download"])
@@ -63,5 +65,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__)
-    main(args)
+    main(sys.argv)
