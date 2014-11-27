@@ -8,11 +8,11 @@ import tempfile
 
 from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in)
 
-import semanticizest.parse_wikidump
 from semanticizest.parse_wikidump.__main__ import main as parse_wikidump_main
 from semanticizest.parse_wikidump import (clean_text, extract_links,
                                           page_statistics, parse_dump,
                                           remove_links)
+from semanticizest._semanticizer import createtables_path
 
 
 # Straight from nlwiki: a {| {| |} table (works in MediaWiki!)
@@ -117,8 +117,7 @@ def test_page_statistics():
 def test_parse_dump_ngrams():
     db = sqlite3.connect(':memory:')
     cur = db.cursor()
-    with open(join(dirname(semanticizest.parse_wikidump.__file__),
-                   "createtables.sql")) as create:
+    with open(createtables_path()) as create:
         cur.executescript(create.read())
 
     dump = join(dirname(abspath(__file__)),
@@ -137,8 +136,7 @@ def test_parse_dump_ngrams():
 def test_parse_dump():
     db = sqlite3.connect(':memory:')
     cur = db.cursor()
-    with open(join(dirname(semanticizest.parse_wikidump.__file__),
-                   "createtables.sql")) as create:
+    with open(createtables_path()) as create:
         cur.executescript(create.read())
 
     dump = join(dirname(abspath(__file__)),

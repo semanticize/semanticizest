@@ -9,8 +9,6 @@ from HTMLParser import HTMLParser
 from itertools import chain
 import logging
 import re
-import sqlite3
-from os.path import join, dirname, abspath
 import xml.etree.ElementTree as etree   # don't use LXML, it's slower (!)
 
 import six
@@ -292,46 +290,3 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     _logger.info("Dump parsing done: processed %d articles", i)
 
     db.commit()
-
-
-def create_model(dump, db_file=':memory:'):
-    """Create a semanticizer model from a wikidump and store it in a DB.
-
-    if df_file is ':memory', an in-memory db will be created,
-    otherwise it is the filename of the disk-based db.
-
-    Returns a handle to the newly created db containing the model.
-    """
-    db = sqlite3.connect(db_file)
-    parse_stuff_to_db(dump, db)
-    return db
-
-
-def parse_stuff_to_db(fname, db):
-    """Parses a wikidump, stores the model supplied db."""
-    cur = db.cursor()
-    with open(join(dirname(__file__), "createtables.sql")) as create:
-        cur.executescript(create.read())
-    dump = join(dirname(abspath(__file__)),
-                fname)
-    parse_dump(dump, db, N=2)
-
-    return db
-
-
-def load_model(db):
-    return get_link_count(db)
-
-
-def load_model_from_file(fname):
-    with sqlite3.connect(fname) as db:
-        return load_model(db)
-
-
-def get_link_count(db):
-    """Extracts the link counts from a model stored in a db."""
-    cur = db.cursor()
-    return {(t, a): c for
-            t, a, c in cur.execute('select target, ngram as anchor, count '
-                                   'from linkstats, ngrams '
-                                   'where ngram_id = ngrams.id;')}

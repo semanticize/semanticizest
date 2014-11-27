@@ -1,17 +1,25 @@
 from collections import defaultdict
-import operator
+import sqlite3
+from os.path import join, dirname, abspath
 
 import six
 
 from semanticizest._util import ngrams_with_pos, tosequence
+from semanticizest.parse_wikidump import parse_dump
 
 
 class Semanticizer(object):
-    def __init__(self, link_count, N=7):
+    def __init__(self, fname, N=7):
         commonness = defaultdict(list)
 
-        for (target, anchor), count in six.iteritems(link_count):
+        self.db = sqlite3.connect(fname)
+        cur = self.db.cursor()
+        for target, anchor, count in cur.execute(
+            'select target, ngram as anchor, count '
+            'from linkstats, ngrams '
+            'where ngram_id = ngrams.id;'):
             commonness[anchor].append((target, count))
+
         for anchor, targets in six.iteritems(commonness):
             # targets.sort(key=operator.itemgetter(1), reverse=True)
 
@@ -49,3 +57,32 @@ class Semanticizer(object):
             if s in self.commonness:
                 for target, prob in self.commonness[s]:
                     yield i, j, target, prob
+
+
+def create_model(dump, db_file=':memory:'):
+    """Create a semanticizer model from a wikidump and store it in a DB.
+
+    if df_file is ':memory', an in-memory db will be created,
+    otherwise it is the filename of the disk-based db.
+
+    Returns a handle to the newly created db containing the model.
+    """
+    db = sqlite3.connect(db_file)
+    _parse_stuff_to_db(dump, db)
+    return db
+
+
+def _parse_stuff_to_db(fname, db):
+    """Parses a wikidump, stores the model supplied db."""
+    cur = db.cursor()
+    with open(createtables_path()) as create:
+        cur.executescript(create.read())
+    dump = join(dirname(abspath(__file__)),
+                fname)
+    parse_dump(dump, db, N=2)
+
+    return db
+
+
+def createtables_path():
+    return join(dirname(__file__), "createtables.sql")

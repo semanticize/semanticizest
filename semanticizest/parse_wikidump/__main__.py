@@ -12,16 +12,16 @@ Options:
 from __future__ import print_function
 
 import logging
-from os.path import dirname, join
 import sqlite3
 import sys
 
 from six.moves.urllib.error import HTTPError
-from six.moves.urllib.request import urlopen, urlretrieve
+from six.moves.urllib.request import urlretrieve
 
 from docopt import docopt
 
 from . import parse_dump
+from .._semanticizer import createtables_path
 
 
 logger = logging.getLogger('semanticizest')
@@ -63,7 +63,7 @@ def main(args):
         ngram = int(ngram)
 
     db = sqlite3.connect(model_fname)
-    with open(join(dirname(__file__), "createtables.sql")) as f:
+    with open(createtables_path()) as f:
         create = f.read()
 
     c = db.cursor()

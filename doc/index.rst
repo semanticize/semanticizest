@@ -20,12 +20,10 @@ Import the required modules::
 
     >>> import re
     >>> from semanticizest import Semanticizer
-    >>> from semanticizest.parse_wikidump import load_model_from_file
 
 Load the model from disk::
 
-    >>> model = load_model_from_file('liwiki.model')
-    >>> sem = Semanticizer(model)
+    >>> sem = Semanticizer('liwiki.model')
 
 Set up a piece of sample text and tokenize it::
 

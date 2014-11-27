@@ -4,13 +4,13 @@ from os.path import join, dirname
 from nose.tools import assert_equal
 
 from semanticizest import Semanticizer
-from semanticizest.parse_wikidump import create_model, load_model
+from semanticizest._semanticizer import create_model
 
 
 # create in-memory db
 db = create_model(join(dirname(__file__),
-                       'nlwiki-20140927-pages-articles-sample.xml'))
-sem = Semanticizer(load_model(db), N=2)
+                       'nlwiki-20140927-pages-articles-sample.xml'), 'nlwiki_test.sqlite3')
+sem = Semanticizer('nlwiki_test.sqlite3', N=2)
 
 
 def test_semanticizer():
