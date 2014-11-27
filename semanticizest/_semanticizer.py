@@ -9,22 +9,21 @@ from semanticizest.parse_wikidump import parse_dump
 
 
 class Semanticizer(object):
-    """Entity linking for the masses"""
+    """Entity linker.
+
+    Parameters
+    ----------
+    fname : string
+        Filename of the stored model from which to load the
+        Wikipedia statistics.
+
+    N : int
+        Maximum length of the ngrams to extract from the token
+        sequences. This should be the same as the length used to
+        create the stored model.
+    """
 
     def __init__(self, fname, N=7):
-        """Create a semanticizer from the stored model.
-
-        Parameters
-        ----------
-        fname : string
-            Filename of the stored model from which to load the
-            Wikipedia statistics.
-
-        N : int
-            Maximum length of the ngrams to extract from the token
-            sequences. This should be the same as the length used to
-            create the stored model.
-        """
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
