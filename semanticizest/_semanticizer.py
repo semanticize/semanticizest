@@ -13,12 +13,12 @@ class Semanticizer(object):
         for (target, anchor), count in six.iteritems(link_count):
             commonness[anchor].append((target, count))
         for anchor, targets in six.iteritems(commonness):
-            targets.sort(key=operator.itemgetter(1))
+            # targets.sort(key=operator.itemgetter(1), reverse=True)
 
             # Turn counts into probabilities.
             # XXX should we preserve the counts as well?
             total = float(sum(count for _, count in targets))
-            targets = ((t, count / total) for t, count in targets)
+            commonness[anchor] = [(t, count / total) for t, count in targets]
 
         self.commonness = commonness
         self.N = N
