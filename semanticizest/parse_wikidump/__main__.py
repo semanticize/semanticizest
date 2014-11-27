@@ -17,7 +17,7 @@ import sqlite3
 import sys
 
 from six.moves.urllib.error import HTTPError
-from six.moves.urllib.request import urlopen
+from six.moves.urllib.request import urlopen, urlretrieve
 
 from docopt import docopt
 
@@ -27,6 +27,18 @@ from . import parse_dump
 logger = logging.getLogger('semanticizest')
 logger.addHandler(logging.StreamHandler(sys.stderr))
 logger.setLevel('INFO')
+
+
+class Progress(object):
+    def __init__(self):
+        self.threshold = .0
+
+    def __call__(self, n_blocks, blocksize, totalsize):
+        done = n_blocks * blocksize
+        if done >= self.threshold * totalsize:
+            logger.info("%3d%% done", int(100 * self.threshold))
+            self.threshold += .05
+
 
 DUMP_TEMPLATE = (
     "https://dumps.wikimedia.org/{0}/latest/{0}-latest-pages-articles.xml.bz2")
@@ -38,15 +50,12 @@ def main(args):
     wikidump = args['<dump>']
     if args["--download"]:
         url = DUMP_TEMPLATE.format(args["--download"])
+        logger.info("Saving wikidump to %r", wikidump)
         try:
-            dumpstream = urlopen(url)
+            urlretrieve(url, wikidump, Progress())
         except HTTPError as e:
             print("Cannot download {0!r}: {1}".format(url, e))
             sys.exit(1)
-        # Probably want to print or log something here
-        with open(wikidump, "w") as out:
-            logger.info("Saving wikidump to %r", wikidump)
-            out.write(dumpstream.read())
 
     model_fname = args['<model-filename>']
     ngram = args['--ngram']
