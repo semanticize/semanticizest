@@ -13,23 +13,35 @@ Quick usage
 -----------
 
 .. NOTE::
-    Wishful thinking for now...
+    Wishful thinking for now... (but it actually works!)
+
+.. code:: bash
+    # Read wikipedia dump, create model and store it in a file
+    python -m semanticizest.parse_wikidump --download lawiki lawiki.xml.bz2 la.model
 
 .. code:: python
 
-    from semanticizest import Semanticizer, store_model, load_model
-
-    # Read wikipedia dump, create model and store it in a file
-    model = create_model('lawiki-20140931-pages-articles.xml.bz2')
-    store_model(model, 'lawiki-20140931.model')
+    import re
+    from semanticizest import Semanticizer
+    from semanticizest._wiki_dump_parser import load_model_from_file
 
     # Load a stored model from file and initialize a semanticizer
-    semanticizer = Semanticizer(model=load_model('lawiki-20140931.model'))
+    model = load_model_from_file('la.model')
+    sem = Semanticizer(model)
 
     # Semanticize text to get a list of links
-    text = """Lorem ipsum, sic dolor amet..."""
-    links = semanticizer.semanticize(text)
+    text = """cogito ergo sum"""
+    toks = re.findall('\w+', text)
 
+    for cand in sem.all_candidates(toks):
+       print cand
+
+    # A bit of a longer example
+    text = """Area 389.434 km² Naxos est maxima Cycladum insula. Insulae orientali sunt litora ardua, in occidentem versus loca planiora patent, a septentrionibus ad meridiem montes granitici insulam transeunt, qui usque ad 1000 metra surgunt; quorum summa cacumina sunt Mons Iovis et Coronus."""
+    toks = re.findall('\w+', text)
+
+    for cand in sem.all_candidates(toks):
+       print cand
 
 Contents
 ========
