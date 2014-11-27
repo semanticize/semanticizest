@@ -1,10 +1,6 @@
 Semanticizer, standalone
 ========================
 
-This project is a work in progress. If you want to try it, you'll have to
-read the code to figure out how it works, if at all. The documentation
-partly reflects how it's supposed to work.
-
 Semanticizest is a library for doing entity linking, also known as
 semantic linking or semanticizing: you feed it text, and it outputs links
 to pertinent Wikipedia concepts. You can use these links as a "semantic
