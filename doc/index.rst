@@ -20,7 +20,7 @@ Import the required modules::
 
     >>> import re
     >>> from semanticizest import Semanticizer
-    >>> from semanticizest._wiki_dump_parser import load_model_from_file
+    >>> from semanticizest.parse_wikidump import load_model_from_file
 
 Load the model from disk::
 
