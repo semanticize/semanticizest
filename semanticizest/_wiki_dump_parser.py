@@ -4,19 +4,21 @@ from __future__ import print_function
 
 from bz2 import BZ2File
 from collections import Counter
-from datetime import datetime
 import gzip
 from HTMLParser import HTMLParser
 from itertools import chain
+import logging
 import re
 import sqlite3
-import sys
 from os.path import join, dirname, abspath
 import xml.etree.ElementTree as etree   # don't use LXML, it's slower (!)
 
 import six
 from semanticizest._util import ngrams
 from semanticizest import parse_wikidump
+
+
+_logger = logging.getLogger(__name__)
 
 
 def _get_namespace(tag):
@@ -205,8 +207,7 @@ def _open(f):
     return f
 
 
-def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
-               verbose=False):
+def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     """Parse Wikipedia database dump, return n-gram and link statistics.
 
     Parameters
@@ -226,8 +227,6 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
     tokenizer : callable, optional
         Tokenizer. Called on output of sentence splitter (strings).
         Must return iterable over strings.
-    verbose : boolean
-        Whether to report progress on stderr.
     """
 
     f = _open(dump)
@@ -240,12 +239,10 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
     c.execute('''create unique index target_anchor
                  on linkstats(ngram_id, target)''')
 
-    if verbose:
-        start = datetime.now()
-        print("Processing articles...", file=sys.stderr)
+    _logger.info("Processing articles")
     for i, (_, title, page, redirect) in enumerate(extract_pages(f), 1):
-        if verbose and i % 10000 == 0:
-            print(i, "at", datetime.now())
+        if i % 10000 == 0:
+            _logger.info("%d articles done", i)
         if redirect is not None:
             redirects[title] = redirect
             continue
@@ -276,8 +273,7 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
 
         db.commit()
 
-    if verbose:
-        print("Processing redirects...", file=sys.stderr)
+    _logger.info("Processing %d redirects", len(redirects))
     for redir, target in redirects.items():
         for anchor, count in c.execute('''select ngram_id, count from linkstats
                                           where target = ?''', [redir]):
@@ -292,14 +288,9 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None,
     c.executemany('delete from linkstats where target = ?',
                   ([redir] for redir in redirects))
 
-    if verbose:
-        print("Finalizing database...", file=sys.stderr)
+    _logger.info("Finalizing database")
     c.executescript('''drop index target_anchor; vacuum;''')
-    if verbose:
-        now = datetime.now()
-        print("Done at", now, "\n",
-              "Processed", i, "articles in", now - start,
-              file=sys.stderr)
+    _logger.info("Dump parsing done: processed %d articles", i)
 
     db.commit()
 
