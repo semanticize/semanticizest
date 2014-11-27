@@ -9,7 +9,22 @@ from semanticizest.parse_wikidump import parse_dump
 
 
 class Semanticizer(object):
+    """Entity linking for the masses"""
+
     def __init__(self, fname, N=7):
+        """Create a semanticizer from the stored model.
+
+        Parameters
+        ----------
+        fname : string
+            Filename of the stored model from which to load the
+            Wikipedia statistics.
+
+        N : int
+            Maximum length of the ngrams to extract from the token
+            sequences. This should be the same as the length used to
+            create the stored model.
+        """
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
@@ -62,10 +77,20 @@ class Semanticizer(object):
 def create_model(dump, db_file=':memory:'):
     """Create a semanticizer model from a wikidump and store it in a DB.
 
-    if df_file is ':memory', an in-memory db will be created,
-    otherwise it is the filename of the disk-based db.
+    Parameters
+    ----------
+    dump : string
+        Filename of a Wikipedia dump, e.g.,
+        'enwiki-20141106-pages-articles.xml.bz2'
+    db_file : string
+       (File)name of the sqlite3 DB. If `df_file` is `:memory:`, an in-memory
+       db will be created, otherwise it is the filename of the
+       disk-based db.
 
-    Returns a handle to the newly created db containing the model.
+    Returns
+    ------
+    db : sqlite3.Connection
+        The handle to the newly created db containing the model.
     """
     db = sqlite3.connect(db_file)
     _parse_stuff_to_db(dump, db)
@@ -85,4 +110,5 @@ def _parse_stuff_to_db(fname, db):
 
 
 def createtables_path():
+    """Return the full path to the DB initialization script."""
     return join(dirname(__file__), "createtables.sql")
