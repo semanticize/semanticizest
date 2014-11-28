@@ -249,6 +249,9 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
 
     c = db.cursor()
 
+    # Store the maximum ngram length, so we can use it later on
+    c.execute('''insert into configuration values ('N', '?')''', [N])
+    
     # Temporary index to speed up insertion
     c.execute('''create unique index target_anchor
                  on linkstats(ngram_id, target)''')

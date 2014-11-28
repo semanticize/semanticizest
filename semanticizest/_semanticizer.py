@@ -11,19 +11,16 @@ from semanticizest.parse_wikidump import parse_dump
 class Semanticizer(object):
     """Entity linker.
 
-    Parameters
-    ----------
-    fname : string
-        Filename of the stored model from which to load the
-        Wikipedia statistics.
+    def __init__(self, fname):
+        """Create a semanticizer from the stored model.
 
-    N : int
-        Maximum length of the ngrams to extract from the token
-        sequences. This should be the same as the length used to
-        create the stored model.
-    """
+        Parameters
+        ----------
+        fname : string
+            Filename of the stored model from which to load the
+            Wikipedia statistics.
 
-    def __init__(self, fname, N=7):
+        """
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
@@ -43,7 +40,7 @@ class Semanticizer(object):
             commonness[anchor] = [(t, count / total) for t, count in targets]
 
         self.commonness = commonness
-        self.N = N
+        self.N = int(cur.execute('''select value from configuration where key = 'N';''').fetchone());
 
     def all_candidates(self, s):
         """Retrieve all candidate entities.
