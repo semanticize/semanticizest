@@ -4,6 +4,9 @@ from os.path import join, dirname, abspath
 
 import six
 
+from math import sqrt
+from scipy.stats import norm 
+
 from semanticizest._util import ngrams_with_pos, tosequence
 from semanticizest.parse_wikidump import parse_dump
 
@@ -23,7 +26,7 @@ class Semanticizer(object):
         create the stored model.
     """
 
-    def __init__(self, fname, N=7):
+    def __init__(self, fname, N=7, score='wilson', wilson_confidence=0.95):
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
@@ -34,16 +37,35 @@ class Semanticizer(object):
             'where ngram_id = ngrams.id;'):
             commonness[anchor].append((target, count))
 
+        if score=='wilson':
+            # Better but slower
+            z = norm.ppf(wilson_confidence)
+            makeProb = lambda count, total: self._ci_lower_bound(count, total, z)
+        else:
+            makeProb = lambda count, total: count / total
+
         for anchor, targets in six.iteritems(commonness):
             # targets.sort(key=operator.itemgetter(1), reverse=True)
 
             # Turn counts into probabilities.
             # XXX should we preserve the counts as well?
             total = float(sum(count for _, count in targets))
-            commonness[anchor] = [(t, count / total) for t, count in targets]
+            commonness[anchor] = [(t, makeProb(count, total)) for t, count in targets]
 
         self.commonness = commonness
         self.N = N
+
+    def _ci_lower_bound(self, pos, n, z):
+        """
+        Calculate Lower bound of Wilson score confidence interval for a Bernoulli parameter
+        as described here: 
+        http://www.evanmiller.org/how-not-to-sort-by-average-rating.html
+        """
+        if n == 0:
+            return 0
+        phat = 1.0*pos/n
+        score = (phat + z*z/(2*n) - z * sqrt((phat*(1-phat)+z*z/(4*n))/n))/(1+z*z/n)
+        return score
 
     def all_candidates(self, s):
         """Retrieve all candidate entities.
