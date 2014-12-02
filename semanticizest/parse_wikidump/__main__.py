@@ -59,7 +59,9 @@ def main(args):
 
     model_fname = args['<model-filename>']
     ngram = args['--ngram']
-    if ngram not in (None, "None"):
+    if ngram in (None, "None"):
+        ngram = None
+    else:
         ngram = int(ngram)
 
     db = sqlite3.connect(model_fname)

@@ -169,6 +169,9 @@ def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
         The first dict maps (target, anchor) pairs to counts.
         The second maps n-grams (up to N) to counts.
     """
+    if N is not None and not isinstance(N, int):
+        raise TypeError("expected integer or None for N, got %r" % N)
+
     clean = clean_text(page)
     link_counts = Counter(extract_links(clean))
 
