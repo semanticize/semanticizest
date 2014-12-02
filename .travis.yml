@@ -4,4 +4,4 @@ python:
 install: "pip install -r requirements.txt"
 script:
   - nosetests -v
-  - nosetests --with-doctest --doctest-extension doc/*.rst
+  #- nosetests --with-doctest --doctest-extension doc/*.rst
