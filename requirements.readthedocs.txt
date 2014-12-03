@@ -1,0 +1,7 @@
+cytoolz
+docopt
+MarkupSafe
+nose>=1.3.3
+numpydoc
+six>=1.4.1
+Sphinx
