@@ -49,8 +49,8 @@ class Semanticizer(object):
     def _get_senses_counts(self):
         """Return all senses and their counts."""
         return self._cur.execute('select target, ngram as anchor, count '
-                                'from linkstats, ngrams '
-                                'where ngram_id = ngrams.id;')
+                                 'from linkstats, ngrams '
+                                 'where ngram_id = ngrams.id;')
 
     def all_candidates(self, s):
         """Retrieve all candidate entities.

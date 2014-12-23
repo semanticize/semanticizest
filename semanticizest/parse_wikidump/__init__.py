@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from os.path import basename
 from bz2 import BZ2File
-from collections import Counter
+from collections import Counter, namedtuple
 import gzip
 from HTMLParser import HTMLParser
 from itertools import chain
@@ -18,6 +18,9 @@ from semanticizest._version import __version__
 
 
 _logger = logging.getLogger(__name__)
+
+
+Page = namedtuple("Page", ['page_id', 'title', 'content', 'redirect'])
 
 
 def _get_namespace(tag):
@@ -53,9 +56,11 @@ def extract_pages(f):
 
     Returns
     -------
-    pages : iterable over (int, string, string, {string, None})
-        Generates (page_id, title, content, redirect_target) triples.
-        Strings are all unicode objects in Python 2.x.
+    pages : iterable over `Page`s
+        namedtuples containging the fields (page_id, title, content,
+        redirect_target) triples.  In Python 2.x, may produce either
+        str or unicode strings.
+
     """
     elems = etree.iterparse(f, events=["end"])
 
@@ -89,7 +94,7 @@ def extract_pages(f):
             text = _tounicode(text)
             title = _tounicode(elem.find(title_path).text)
 
-            yield int(elem.find(id_path).text), title, text, redir
+            yield Page(int(elem.find(id_path).text), title, text, redir)
 
             # Prune the element tree, as per
             # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
@@ -266,14 +271,14 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
                  on linkstats(ngram_id, target)''')
 
     _logger.info("Processing articles")
-    for i, (_, title, page, redirect) in enumerate(extract_pages(f), 1):
+    for i, page in enumerate(extract_pages(f), 1):
         if i % 10000 == 0:
             _logger.info("%d articles done", i)
-        if redirect is not None:
-            redirects[title] = redirect
+        if page.redirect is not None:
+            redirects[page.title] = page.redirect
             continue
 
-        link, ngram = page_statistics(page, N=N, tokenizer=tokenizer,
+        link, ngram = page_statistics(page.content, N=N, tokenizer=tokenizer,
                                       sentence_splitter=sentence_splitter)
 
         # We don't count the n-grams within the links, but we need them
