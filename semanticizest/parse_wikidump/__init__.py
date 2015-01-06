@@ -196,8 +196,9 @@ def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
             sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links,
                                  re.MULTILINE | re.UNICODE)
         else:
-            sentences = [sentence for paragraph in re.split('\n+', no_links)
-                                  for sentence in paragraph]
+            sentences = [sentence
+                         for paragraph in re.split('\n+', no_links)
+                         for sentence in paragraph]
 
         if tokenizer is None:
             tokenizer = re.compile(r'\w+', re.UNICODE).findall
@@ -250,8 +251,8 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     c = db.cursor()
 
     # Store the maximum ngram length, so we can use it later on
-    c.execute('''insert into configuration values ('N', '?')''', [N])
-    
+    c.execute('''insert into parameters values ('N', ?);''', (str(N),))
+
     # Temporary index to speed up insertion
     c.execute('''create unique index target_anchor
                  on linkstats(ngram_id, target)''')

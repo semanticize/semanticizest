@@ -1,5 +1,6 @@
 import re
 from os.path import join, dirname
+from tempfile import NamedTemporaryFile
 
 from nose.tools import assert_equal
 
@@ -7,10 +8,11 @@ from semanticizest import Semanticizer
 from semanticizest._semanticizer import create_model
 
 
-# create in-memory db
+tempfile = NamedTemporaryFile()
 db = create_model(join(dirname(__file__),
-                       'nlwiki-20140927-pages-articles-sample.xml'), 'nlwiki_test.sqlite3')
-sem = Semanticizer('nlwiki_test.sqlite3', N=2)
+                       'nlwiki-20140927-pages-articles-sample.xml'),
+                  tempfile.name)
+sem = Semanticizer(tempfile.name)
 
 
 def test_semanticizer():

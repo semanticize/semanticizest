@@ -33,7 +33,8 @@ In de onderstaande tabel de gemiddelde prijs van nikkel per jaar.
 !2010
 !2011
 |-
-|Nikkelprijs ($/ton)|| 14.733|| 24.267|| 37.181 || 21.027 || 14.700 ||21.809 || 22.831
+|Nikkelprijs ($/ton)|| 14.733|| 24.267|| 37.181 || 21.027 || 14.700 ||21.809 \
+|| 22.831
 |}
 This is not in the original.'''
 

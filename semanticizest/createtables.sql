@@ -5,9 +5,9 @@ pragma synchronous = off;
 drop table if exists linkstats;
 drop table if exists ngrams;
 
-create table configuration (
-    key string primary key not NULL,
-    value string default NULL,
+create table parameters (
+    key text primary key not NULL,
+    value text default NULL
 );
 
 create table ngrams (

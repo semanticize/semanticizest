@@ -9,10 +9,10 @@ from semanticizest.parse_wikidump import parse_dump
 
 
 class Semanticizer(object):
-    """Entity linker.
+    """Entity linker."""
 
     def __init__(self, fname):
-        """Create a semanticizer from the stored model.
+        """Create a semanticizer from a stored model.
 
         Parameters
         ----------
@@ -24,11 +24,9 @@ class Semanticizer(object):
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
-        cur = self.db.cursor()
-        for target, anchor, count in cur.execute(
-            'select target, ngram as anchor, count '
-            'from linkstats, ngrams '
-            'where ngram_id = ngrams.id;'):
+        self._cur = self.db.cursor()
+
+        for target, anchor, count in self._get_senses_counts():
             commonness[anchor].append((target, count))
 
         for anchor, targets in six.iteritems(commonness):
@@ -40,7 +38,20 @@ class Semanticizer(object):
             commonness[anchor] = [(t, count / total) for t, count in targets]
 
         self.commonness = commonness
-        self.N = int(cur.execute('''select value from configuration where key = 'N';''').fetchone());
+        self.N = self._get_ngram_max_length()
+
+    def _get_ngram_max_length(self):
+        self._cur.execute("select value "
+                          "from parameters "
+                          "where key = 'N';")
+        N = self._cur.fetchone()
+        return N
+
+    def _get_senses_counts(self):
+        """Return all senses and their counts."""
+        return self._cur.execute('select target, ngram as anchor, count '
+                                'from linkstats, ngrams '
+                                'where ngram_id = ngrams.id;')
 
     def all_candidates(self, s):
         """Retrieve all candidate entities.
