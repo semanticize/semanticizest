@@ -1,3 +1,4 @@
+import sys
 from collections import defaultdict
 import sqlite3
 from os.path import join, dirname, abspath
@@ -38,13 +39,13 @@ class Semanticizer(object):
             commonness[anchor] = [(t, count / total) for t, count in targets]
 
         self.commonness = commonness
-        self.N = self._get_ngram_max_length()
+        self.N = int(self._get_ngram_max_length()) or 3
 
     def _get_ngram_max_length(self):
         self._cur.execute("select value "
                           "from parameters "
                           "where key = 'N';")
-        N = self._cur.fetchone()
+        N = self._cur.fetchone()[0]
         return N
 
     def _get_senses_counts(self):

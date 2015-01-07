@@ -1,12 +1,14 @@
+import sys
 import re
 from os.path import join, dirname
 from tempfile import NamedTemporaryFile
+from glob import glob
+from os.path import basename
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_multi_line_equal
 
 from semanticizest import Semanticizer
 from semanticizest._semanticizer import create_model
-
 
 tempfile = NamedTemporaryFile()
 db = create_model(join(dirname(__file__),
@@ -37,3 +39,31 @@ def test_semanticizer_redirect():
     actual = set(string for _, _, string, _ in sem.all_candidates(tokens))
 
     assert_equal(expected, actual)
+
+
+def test_semanticiser_nlwiki():
+    tempfile = NamedTemporaryFile()
+    db = create_model(join(dirname(__file__),
+                           'nlwiki-20140927-pages-articles-sample.xml'),
+                      tempfile.name)
+    sem = Semanticizer(tempfile.name)
+
+    # print "sem'ing right now!"
+    dirs = {d:join(dirname(__file__), 'nlwiki', d) for d in "in expected actual".split()}
+
+    g = join(dirs['in'], '*')
+    # print "glob is:",g
+    for doc in glob(g):
+        # print "docdocdoc:",doc
+        fname = basename(doc)
+        with open(doc) as f:
+            with open(join(dirs['actual'], fname), 'w') as out:
+                tokens = f.read().split()
+                out.write("\n".join(str(cand) for cand in sem.all_candidates(tokens)))
+        with open(join(dirs['expected'], fname)) as f:
+            expected = f.read()
+        with open(join(dirs['actual'], fname)) as f:
+            actual = f.read()
+
+        # assert_multi_line_equal(expected, actual)
+    return 1

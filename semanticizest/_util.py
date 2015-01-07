@@ -5,6 +5,9 @@ from six.moves.urllib.parse import quote
 
 def ngrams_with_pos(lst, N):
     """Generate n-grams for 1 <= n <= N from lst."""
+    if not (isinstance(N, int) or
+            N is None):
+        raise TypeError("argument N should be an integer, was %s" % type(N))
 
     join = " ".join
 
