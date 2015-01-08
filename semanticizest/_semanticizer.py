@@ -39,7 +39,7 @@ class Semanticizer(object):
             commonness[anchor] = [(t, count / total) for t, count in targets]
 
         self.commonness = commonness
-        self.N = int(self._get_ngram_max_length()) or 3
+        self.N = self._get_ngram_max_length()
 
     def _get_ngram_max_length(self):
         self._cur.execute("select value "
