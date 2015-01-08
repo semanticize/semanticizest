@@ -12,10 +12,9 @@ def ngrams_with_pos(lst, N=None):
     N : int, optional
         Maximum n-gram length, defaults to the length of `lst`.
 
-    Yields
-    -------
+    Returns
+    -----
     tuple (start, end, n-gram)
-
         Tuples are start and end index in the original list `lst`,
         the n-gram is the space joined string value. The n-grams are
         yielded in leftmost longest order.
@@ -46,7 +45,10 @@ def ngrams_with_pos(lst, N=None):
 def ngrams(lst, N=None):
     """Generate bare n-grams from a list of strings.
 
-    See ``ngrams_with_pos``.
+    See Also
+    --------
+    ngrams_with_pos : for a description of the arguments.
+
     """
     return (ng for _, _, ng in ngrams_with_pos(lst, N))
 

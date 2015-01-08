@@ -65,9 +65,10 @@ class Semanticizer(object):
         Returns
         -------
         candidates : iterable over (int, int, string, float)
-            Candidate entities: 4-tuples of start index, end index
-            (both in tokenized input), target entity and probability
-            (commonness).
+            Candidate entities are 4-tuples of the indices `start` and
+            `end` (both in tokenized input, and both start at 1),
+            `target entity` (title of the Wikipedia article) and
+            `probability` (commonness.)
         """
 
         if isinstance(s, six.string_types):
