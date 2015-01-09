@@ -29,6 +29,17 @@ def _get_namespace(tag):
     return namespace
 
 
+if six.PY3:
+    def _tounicode(s):
+        return s
+else:
+    def _tounicode(s):
+        # Convert ASCII strings coming from xml.etree.
+        if isinstance(s, str):
+            s = s.decode('ascii')
+        return s
+
+
 def extract_pages(f):
     """Extract pages from Wikimedia database dump.
 
@@ -42,15 +53,15 @@ def extract_pages(f):
     -------
     pages : iterable over (int, string, string, {string, None})
         Generates (page_id, title, content, redirect_target) triples.
-        In Python 2.x, may produce either str or unicode strings.
+        Strings are all unicode objects in Python 2.x.
     """
-    elems = (elem for _, elem in etree.iterparse(f, events=["end"]))
+    elems = etree.iterparse(f, events=["end"])
 
     # We can't rely on the namespace for database dumps, since it's changed
     # it every time a small modification to the format is made. So, determine
     # those from the first element we find, which will be part of the metadata,
     # and construct element paths.
-    elem = next(elems)
+    _, elem = next(elems)
     namespace = _get_namespace(elem.tag)
     ns_mapping = {"ns": namespace}
     ns_path = "./{%(ns)s}ns" % ns_mapping
@@ -60,7 +71,7 @@ def extract_pages(f):
     title_path = "./{%(ns)s}title" % ns_mapping
     redir_path = "./{%(ns)s}redirect" % ns_mapping
 
-    for elem in elems:
+    for _, elem in elems:
         if elem.tag == page_tag:
             if elem.find(ns_path).text != '0':
                 continue
@@ -70,10 +81,13 @@ def extract_pages(f):
                 # Empty article; these occur in Wikinews dumps.
                 continue
             redir = elem.find(redir_path)
-            redir = redir.attrib['title'] if redir is not None else None
-            yield (int(elem.find(id_path).text),
-                   elem.find(title_path).text,
-                   text, redir)
+            redir = (_tounicode(redir.attrib['title'])
+                     if redir is not None else None)
+
+            text = _tounicode(text)
+            title = _tounicode(elem.find(title_path).text)
+
+            yield int(elem.find(id_path).text), title, text, redir
 
             # Prune the element tree, as per
             # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/

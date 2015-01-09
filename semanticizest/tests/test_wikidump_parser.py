@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from cytoolz import compose
+import six
 
 from os.path import abspath, dirname, join
 import sqlite3
 import tempfile
 
-from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in)
+from nose import SkipTest
+from nose.tools import (assert_equal, assert_greater, assert_in, assert_not_in,
+                        assert_true)
 
 from semanticizest.parse_wikidump.__main__ import main as parse_wikidump_main
 from semanticizest.parse_wikidump import (clean_text, extract_links,
-                                          page_statistics, parse_dump,
-                                          remove_links)
+                                          extract_pages, page_statistics,
+                                          parse_dump, remove_links)
 from semanticizest._semanticizer import createtables_path
 
 
@@ -33,6 +36,11 @@ In de onderstaande tabel de gemiddelde prijs van nikkel per jaar.
 |Nikkelprijs ($/ton)|| 14.733|| 24.267|| 37.181 || 21.027 || 14.700 ||21.809 || 22.831
 |}
 This is not in the original.'''
+
+
+def _test_dump_path():
+    return join(dirname(abspath(__file__)),
+                'nlwiki-20140927-pages-articles-sample.xml')
 
 
 def test_clean_text():
@@ -82,6 +90,15 @@ def test_extract_links():
                  [("Tera-", "tera"), ("Becquerel", "becquerels")])
 
 
+def test_extract_pages_unicode():
+    if six.PY3:
+        raise SkipTest
+    for _, title, text, target in extract_pages(_test_dump_path()):
+        for s in (title, text, target):
+            if s is not None:
+                assert_true(isinstance(s, unicode))
+
+
 def test_page_statistics():
     page = """
         Wikisyntax is the [[syntax (to be parsed)|syntax]] used on
@@ -120,8 +137,7 @@ def test_parse_dump_ngrams():
     with open(createtables_path()) as create:
         cur.executescript(create.read())
 
-    dump = join(dirname(abspath(__file__)),
-                'nlwiki-20140927-pages-articles-sample.xml')
+    dump = _test_dump_path()
     parse_dump(dump, db, N=2)
 
     ngram_count = dict(cur.execute('select ngram, tf from ngrams;'))
