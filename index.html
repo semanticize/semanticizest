@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to semanticizest’s documentation! &mdash; semanticizest 0.1 documentation</title>
+    <title>Welcome to semanticizest’s documentation! &mdash; semanticizest 0.2.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="semanticizest 0.1 documentation" href="#" />
+    <link rel="top" title="semanticizest 0.2.1 documentation" href="#" />
     <link rel="next" title="API Reference" href="api.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="api.html" title="API Reference"
              accesskey="N">next</a> |</li>
-        <li><a href="#">semanticizest 0.1 documentation</a> &raquo;</li> 
+        <li><a href="#">semanticizest 0.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,9 +50,17 @@
             
   <div class="section" id="welcome-to-semanticizest-s-documentation">
 <h1>Welcome to semanticizest&#8217;s documentation!<a class="headerlink" href="#welcome-to-semanticizest-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>semanticizest (Semanticizer, STandalone) is a library for entity linking.</p>
+<p>semanticizest (Semanticizer, STandalone) is a library for entity
+linking (also known as wikification.)</p>
 <div class="section" id="quick-usage">
 <h2>Quick usage<a class="headerlink" href="#quick-usage" title="Permalink to this headline">¶</a></h2>
+<p>First we need to create a model for the semanticizer. The following
+command will download and read a wikipedia dump (in this case the
+Limburgish wiki) and subsequently create and store the corresponding
+model.</p>
+<div class="code bash highlight-python"><div class="highlight"><pre>python -m semanticizest.parse_wikidump --download liwiki liwiki.model
+</pre></div>
+</div>
 <p>Import the required modules:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">semanticizest</span> <span class="kn">import</span> <span class="n">Semanticizer</span>
@@ -63,12 +71,15 @@
 </pre></div>
 </div>
 <p>Set up a piece of sample text and tokenize it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;&#39;ne Donjon is &#39;ne middeleëuwse, zjwaore, verdedigingstaore, meistal geboewd óp &#39;ne hoage heuvel, de opperhaof, dae deil oetmaak van &#39;n motte.&quot;&quot;&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">toks</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;\w+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;&#39;ne Donjon is &#39;ne middeleëuwse, zjwaore, verdedigingstaore,</span>
+<span class="gp">... </span><span class="s">meistal geboewd óp &#39;ne hoage heuvel, de opperhaof, dae deil oetmaak van &#39;n</span>
+<span class="gp">... </span><span class="s">motte.&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;\w+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Feed the tokens to the semanticizer to get the candidates:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">sem</span><span class="o">.</span><span class="n">all_candidates</span><span class="p">(</span><span class="n">toks</span><span class="p">):</span>
+<p>Feed the tokens to the semanticizer to get the entity link
+candidates:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">sem</span><span class="o">.</span><span class="n">all_candidates</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">print</span> <span class="n">cand</span>
 <span class="go">(7, 8, u&#39;Taore (boewwerk)&#39;, 1.0)</span>
 <span class="go">(13, 14, u&#39;Heuvel&#39;, 1.0)</span>
@@ -76,13 +87,18 @@
 <span class="go">(21, 22, u&#39;Motte&#39;, 1.0)</span>
 </pre></div>
 </div>
+<p>As we can see, It finds four entity candidates in this short text. The
+first entity found is &#8216;Taore (boewwerk)&#8217;, corresponding to the seventh
+token: &#8216;verdedigingstaore&#8217;.</p>
 </div>
 </div>
 <div class="section" id="contents">
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-semanticizest">Semanticizest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-semanticizest._util">utils</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithms &amp; implementation details</a><ul>
@@ -167,11 +183,11 @@
         <li class="right" >
           <a href="api.html" title="API Reference"
              >next</a> |</li>
-        <li><a href="#">semanticizest 0.1 documentation</a> &raquo;</li> 
+        <li><a href="#">semanticizest 0.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2014, NLeSC/UvA.
+        &copy; Copyright 2014-2015, NLeSC/UvA.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>

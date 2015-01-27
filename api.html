@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API Reference &mdash; semanticizest 0.1 documentation</title>
+    <title>API Reference &mdash; semanticizest 0.2.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="semanticizest 0.1 documentation" href="index.html" />
+    <link rel="top" title="semanticizest 0.2.1 documentation" href="index.html" />
     <link rel="prev" title="Welcome to semanticizest’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to semanticizest’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">semanticizest 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">semanticizest 0.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,26 +48,23 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-semanticizest">
-<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-semanticizest" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<p>The semanticizest API is not stable and may change without notice.</p>
+<div class="section" id="module-semanticizest">
+<span id="semanticizest"></span><h2>Semanticizest<a class="headerlink" href="#module-semanticizest" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="semanticizest.Semanticizer">
-<em class="property">class </em><tt class="descclassname">semanticizest.</tt><tt class="descname">Semanticizer</tt><big>(</big><em>fname</em>, <em>N=7</em><big>)</big><a class="headerlink" href="#semanticizest.Semanticizer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">semanticizest.</tt><tt class="descname">Semanticizer</tt><big>(</big><em>fname</em><big>)</big><a class="headerlink" href="#semanticizest.Semanticizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Entity linker.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fname</strong> : string</p>
-<blockquote>
+<blockquote class="last">
 <div><p>Filename of the stored model from which to load the
 Wikipedia statistics.</p>
-</div></blockquote>
-<p><strong>N</strong> : int</p>
-<blockquote class="last">
-<div><p>Maximum length of the ngrams to extract from the token
-sequences. This should be the same as the length used to
-create the stored model.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -101,9 +98,10 @@ create the stored model.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>candidates</strong> : iterable over (int, int, string, float)</p>
 <blockquote class="last">
-<div><p>Candidate entities: 4-tuples of start index, end index
-(both in tokenized input), target entity and probability
-(commonness).</p>
+<div><p>Candidate entities are 4-tuples of the indices <cite>start</cite> and
+<cite>end</cite> (both in tokenized input, and both start at 1),
+<cite>target entity</cite> (title of the Wikipedia article) and
+<cite>probability</cite> (commonness.)</p>
 </div></blockquote>
 </td>
 </tr>
@@ -114,6 +112,84 @@ create the stored model.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-semanticizest._util">
+<span id="utils"></span><h2>utils<a class="headerlink" href="#module-semanticizest._util" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="semanticizest._util.ngrams">
+<tt class="descclassname">semanticizest._util.</tt><tt class="descname">ngrams</tt><big>(</big><em>lst</em>, <em>N=None</em><big>)</big><a class="reference internal" href="_modules/semanticizest/_util.html#ngrams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#semanticizest._util.ngrams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate bare n-grams from a list of strings.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#semanticizest._util.ngrams_with_pos" title="semanticizest._util.ngrams_with_pos"><tt class="xref py py-obj docutils literal"><span class="pre">ngrams_with_pos</span></tt></a></dt>
+<dd>for a description of the arguments.</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="semanticizest._util.ngrams_with_pos">
+<tt class="descclassname">semanticizest._util.</tt><tt class="descname">ngrams_with_pos</tt><big>(</big><em>lst</em>, <em>N=None</em><big>)</big><a class="reference internal" href="_modules/semanticizest/_util.html#ngrams_with_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#semanticizest._util.ngrams_with_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate n-grams with indices from a list of strings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>lst</strong> : list-like of strings</p>
+<p><strong>N</strong> : int, optional</p>
+<blockquote>
+<div><p>Maximum n-gram length, defaults to the length of <cite>lst</cite>.</p>
+</div></blockquote>
+<p><strong>Returns</strong> :</p>
+<p><strong>&#8212;&#8211;</strong> :</p>
+<p><strong>tuple (start, end, n-gram)</strong> :</p>
+<blockquote>
+<div><p>Tuples are start and end index in the original list <cite>lst</cite>,
+the n-gram is the space joined string value. The n-grams are
+yielded in leftmost longest order.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>TypeError</strong> :</p>
+<blockquote>
+<div><p>If <cite>N</cite> is not an integer.</p>
+</div></blockquote>
+<p><strong>ValueError</strong> :</p>
+<blockquote class="last">
+<div><p>If <cite>N</cite> is not at least 1.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="semanticizest._util.tosequence">
+<tt class="descclassname">semanticizest._util.</tt><tt class="descname">tosequence</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="_modules/semanticizest/_util.html#tosequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#semanticizest._util.tosequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast x to sequence. Returns x if at all possible.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="semanticizest._util.url_from_title">
+<tt class="descclassname">semanticizest._util.</tt><tt class="descname">url_from_title</tt><big>(</big><em>title</em>, <em>wiki</em><big>)</big><a class="reference internal" href="_modules/semanticizest/_util.html#url_from_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#semanticizest._util.url_from_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn an article title into a Wikipedia URL.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>wiki</strong> : string</p>
+<blockquote class="last">
+<div><p>Denotes the specific Wikipedia (language), e.g. &#8220;en&#8221;.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
 
 
           </div>
@@ -121,6 +197,15 @@ create the stored model.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Reference</a><ul>
+<li><a class="reference internal" href="#module-semanticizest">Semanticizest</a></li>
+<li><a class="reference internal" href="#module-semanticizest._util">utils</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to semanticizest&#8217;s documentation!</a></p>
@@ -158,11 +243,11 @@ create the stored model.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to semanticizest’s documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">semanticizest 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">semanticizest 0.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2014, NLeSC/UvA.
+        &copy; Copyright 2014-2015, NLeSC/UvA.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
