@@ -1,0 +1,11 @@
+To rebuild documentation and push it to GitHub, do
+
+    make html
+    make gh-pages
+    git push origin gh-pages
+
+in this directory. Then check
+
+    https://semanticize.github.io/semanticizest/
+
+to see if it worked.
