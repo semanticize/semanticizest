@@ -19,6 +19,10 @@ lib
 lib64
 MANIFEST
 
+# Profiler output
+*.prof
+*.lprof
+
 /README.html
 
 *.bz2
@@ -39,6 +43,11 @@ doc/_build
 
 # virtualenv placeholder
 /pyenv/*
+
+# Model databases.
+*.db
+*.model
+*.sqlite3
 
 # Translations
 *.mo
