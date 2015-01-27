@@ -1,4 +1,3 @@
-import sys
 import re
 from os.path import join, dirname
 from tempfile import NamedTemporaryFile
@@ -48,22 +47,26 @@ def test_semanticiser_nlwiki():
                       tempfile.name)
     sem = Semanticizer(tempfile.name)
 
-    # print "sem'ing right now!"
-    dirs = {d:join(dirname(__file__), 'nlwiki', d) for d in "in expected actual".split()}
+    dirs = {d: join(dirname(__file__), 'nlwiki', d)
+            for d in "in expected actual".split()}
 
-    g = join(dirs['in'], '*')
-    # print "glob is:",g
-    for doc in glob(g):
-        # print "docdocdoc:",doc
+    input_test_cases = glob(join(dirs['in'], '*'))
+    assert len(input_test_cases) == 20, \
+           ("number of input test cases in '{}' "
+            "should be 20, was {}".format(dirs['in'],
+                                          len(input_test_cases)))
+
+    for doc in input_test_cases:
         fname = basename(doc)
         with open(doc) as f:
             with open(join(dirs['actual'], fname), 'w') as out:
                 tokens = f.read().split()
-                out.write("\n".join(str(cand) for cand in sem.all_candidates(tokens)))
+                out.write("\n".join(str(cand)
+                                    for cand in sem.all_candidates(tokens)))
         with open(join(dirs['expected'], fname)) as f:
             expected = f.read()
         with open(join(dirs['actual'], fname)) as f:
             actual = f.read()
 
-        # assert_multi_line_equal(expected, actual)
-    return 1
+        assert_multi_line_equal(expected,
+                                actual)

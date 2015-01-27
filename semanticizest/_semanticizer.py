@@ -1,4 +1,3 @@
-import sys
 from collections import defaultdict
 import sqlite3
 from os.path import join, dirname, abspath

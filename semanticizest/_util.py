@@ -30,7 +30,8 @@ def ngrams_with_pos(lst, N=None):
         N = len(lst)
 
     if not isinstance(N, int):
-        raise TypeError("n-gram order N should be an integer, was %s" % type(N))
+        raise TypeError("n-gram order N should be an integer, was %s" %
+                        type(N))
 
     if N < 1:
         raise ValueError("n-gram order N should be 1 or greater %s" % N)
