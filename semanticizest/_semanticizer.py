@@ -45,7 +45,7 @@ class Semanticizer(object):
         self._cur.execute("select value "
                           "from parameters "
                           "where key = 'N';")
-        N = self._cur.fetchone()[0]
+        N = int(self._cur.fetchone()[0])
         return N
 
     def _get_senses_counts(self):
