@@ -36,7 +36,7 @@ to ``scowiki.xml.bz2`` and construct the model from it.
 Documentation
 -------------
 
-The documentation can be found at https://semanticize.github.io/semanticizest/
+Full documentation can be found at https://semanticize.github.io/semanticizest/
 
 
 Copyright and license
