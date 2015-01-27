@@ -2,6 +2,7 @@
 
 Usage:
     parse_wikidump [options] <dump> <model-filename>
+    parse_wikidump --download=<wikiname> <model-filename>
 
 Options:
     --download=wikiname     Download dump from dumps.wikimedia.org first
@@ -54,7 +55,10 @@ def die(msg):
 def main(args):
     args = docopt(__doc__, args)
 
-    wikidump = args['<dump>']
+    if args["--download"]:
+        wikidump = args["--download"] + ".xml.bz2"
+    else:
+        wikidump = args['<dump>']
 
     model_fname = args['<model-filename>']
     ngram = args['--ngram']

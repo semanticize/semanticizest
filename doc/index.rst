@@ -20,7 +20,7 @@ model.
 
 .. code:: bash
 
-    python -m semanticizest.parse_wikidump --download liwiki liwiki.xml.bz2 liwiki.model
+    python -m semanticizest.parse_wikidump --download liwiki liwiki.model
 
 Import the required modules::
 

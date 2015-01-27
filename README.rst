@@ -28,10 +28,10 @@ The result will be a semanticizer model (in SQLite 3 format, if you must know).
 Alternatively, you can use the --download flag to instruct semanticizest to 
 download the LATEST wikipedia dump. For example:
 
-    python -m semanticizest.parse_wikidump --download scowiki scowiki.xml.bz2 sco.model
+    python -m semanticizest.parse_wikidump --download scowiki sco.model
 
-will download https://dumps.wikimedia.org/scowiki/latest/scowiki-latest-pages-articles.xml.bz2
-and construct the model from it.
+will download ``https://dumps.wikimedia.org/scowiki/latest/scowiki-latest-pages-articles.xml.bz2``
+to ``scowiki.xml.bz2`` and construct the model from it.
 
 Documentation
 -------------
