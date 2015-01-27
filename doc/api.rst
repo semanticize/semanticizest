@@ -12,9 +12,3 @@ Semanticizest
 
 .. autoclass:: Semanticizer
    :members:
-
-
-utils
-------
-.. automodule:: semanticizest._util
-   :members:
