@@ -1,7 +1,7 @@
 Semanticizer, standalone
 ========================
 
-Semanticizest is a library for doing entity linking, also known as
+Semanticizest is a package for doing entity linking, also known as
 semantic linking or semanticizing: you feed it text, and it outputs links
 to pertinent Wikipedia concepts. You can use these links as a "semantic
 representation" of the text for NLP or machine learning, or just to provide

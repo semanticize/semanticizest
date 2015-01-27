@@ -6,7 +6,7 @@
 Welcome to semanticizest's documentation!
 =========================================
 
-semanticizest (Semanticizer, STandalone) is a library for entity
+semanticizest (Semanticizer, STandalone) is a package for entity
 linking (also known as wikification.)
 
 
