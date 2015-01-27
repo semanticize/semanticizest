@@ -1,0 +1,4 @@
+# This directory contains generated files (the output of the
+# semanticizer for the files in ../in/)
+*
+!.gitignore

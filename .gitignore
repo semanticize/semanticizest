@@ -37,6 +37,9 @@ nosetests.xml
 
 doc/_build
 
+# virtualenv placeholder
+/pyenv/*
+
 # Translations
 *.mo
 

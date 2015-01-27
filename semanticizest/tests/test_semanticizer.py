@@ -1,16 +1,19 @@
 import re
 from os.path import join, dirname
+from tempfile import NamedTemporaryFile
+from glob import glob
+from os.path import basename
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_multi_line_equal
 
 from semanticizest import Semanticizer
 from semanticizest._semanticizer import create_model
 
-
-# create in-memory db
+tempfile = NamedTemporaryFile()
 db = create_model(join(dirname(__file__),
-                       'nlwiki-20140927-pages-articles-sample.xml'), 'nlwiki_test.sqlite3')
-sem = Semanticizer('nlwiki_test.sqlite3', N=2)
+                       'nlwiki-20140927-pages-articles-sample.xml'),
+                  tempfile.name)
+sem = Semanticizer(tempfile.name)
 
 
 def test_semanticizer():
@@ -35,3 +38,35 @@ def test_semanticizer_redirect():
     actual = set(string for _, _, string, _ in sem.all_candidates(tokens))
 
     assert_equal(expected, actual)
+
+
+def test_semanticiser_nlwiki():
+    tempfile = NamedTemporaryFile()
+    db = create_model(join(dirname(__file__),
+                           'nlwiki-20140927-pages-articles-sample.xml'),
+                      tempfile.name)
+    sem = Semanticizer(tempfile.name)
+
+    dirs = {d: join(dirname(__file__), 'nlwiki', d)
+            for d in "in expected actual".split()}
+
+    input_test_cases = glob(join(dirs['in'], '*'))
+    assert len(input_test_cases) == 20, \
+           ("number of input test cases in '{}' "
+            "should be 20, was {}".format(dirs['in'],
+                                          len(input_test_cases)))
+
+    for doc in input_test_cases:
+        fname = basename(doc)
+        with open(doc) as f:
+            with open(join(dirs['actual'], fname), 'w') as out:
+                tokens = f.read().split()
+                out.write("\n".join(str(cand)
+                                    for cand in sem.all_candidates(tokens)))
+        with open(join(dirs['expected'], fname)) as f:
+            expected = f.read()
+        with open(join(dirs['actual'], fname)) as f:
+            actual = f.read()
+
+        assert_multi_line_equal(expected,
+                                actual)

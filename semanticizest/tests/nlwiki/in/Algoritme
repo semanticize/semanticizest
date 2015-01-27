@@ -1,0 +1,46 @@
+
+
+Een algoritme (van het Arabische woord algawarizmiat: الخوارزميات naar de naam van de Perzische wiskundige Al-Chwarizmi محمد بن موسى الخوارزمي) is een eindige reeks instructies die vanuit een gegeven begintoestand naar een beoogd doel leiden. Algoritmen staan in beginsel los van computerprogramma's, al worden voor de uitvoering van algoritmen vaak computers gebruikt.
+
+Het doel van een algoritme kan van alles zijn met een duidelijk resultaat. De instructies kunnen in het algemeen omgaan met eventualiteiten die bij het uitvoeren kunnen optreden. Algoritmen hebben in het algemeen stappen die zich herhalen (iteratie) of die beslissingen (logica of vergelijkingen) vereisen om de taak te voltooien.
+
+Eenzelfde taak kan gewoonlijk met verschillende reeksen instructies worden opgelost. Het verschil ligt dan meestal in de hoeveelheid tijd, ruimte of inspanning die het algoritme vergt; dit is de complexiteit van een algoritme.
+
+Vergelijk een algoritme met een recept in de keuken. Om aardappelsalade te maken kan het ene recept de instructie "schil de aardappel" bevatten en daarna de instructie "kook de aardappel". Bij een ander recept kunnen die twee stappen omgedraaid zijn. Beide recepten zullen echter vragen deze stappen voor alle aardappelen uit te voeren en het eindresultaat is een lekkere aardappelsalade.
+
+Bij het correct uitvoeren van een computerprogramma is het belangrijk dat het algoritme inderdaad de beoogde functie uitvoert en dat het algoritme goed door het computerprogramma wordt uitgevoerd. 
+
+
+Algoritmen in formele systemen zijn essentieel voor bijvoorbeeld de manier waarop computers informatie verwerken, omdat een computerprogramma een formeel algoritme is dat de computer vertelt welke specifieke stappen in een specifieke volgorde uitgevoerd moeten worden om een bepaald eindresultaat te bereiken.
+
+In het algemeen wordt bij algoritmen die informatie verwerkt, dat is data, die gelezen wordt van een invoerapparaat en die wordt weggeschreven naar een uitvoerapparaat; de informatie kan ook bewaard worden voor later. Opgeslagen data worden bij het analyseren van algoritmen gezien als de "interne toestand" van het apparaat dat het algoritme uitvoert.
+
+Voor elk rekenkundig proces moet een algoritme nauwkeurig gedefinieerd worden: het specificeert namelijk hoe het apparaat zal reageren op elke mogelijke invoer en interne toestand. Omdat een algoritme een exacte lijst is met exacte stappen, is de volgorde waarin de berekening gebeurt kritisch voor het correct functioneren van het algoritme. Uniek aan het concept van formele algoritmen is de toewijzing van een waarde aan een variabele. Dit komt voort uit de notie van geheugen als kladblok.
+
+
+Waar een algoritme de beschrijving is van een oplossing van een probleem is een computerprogramma (in een of andere programmeertaal) de implementatie van dat algoritme. De verschillende manieren om tegen een probleem aan te kijken en het te beschrijven hebben in de loop van de jaren ook verschillende vormen van programmeren opgeleverd: imperatief programmeren, objectgeoriënteerd programmeren, aspectgeoriënteerd programmeren, logisch programmeren, symbolisch programmeren, functioneel programmeren.
+
+In imperatief programmeren worden instructies expliciet opgeschreven, waarbij de berekening bovenaan begint en vervolgens stap voor stap naar beneden verloopt. Dit heet de control flow van een algoritme.
+
+Een andere manier om tegen algoritmen aan te kijken is functioneel programmeren. In programma's van dit type worden algoritmen gezien als wiskundige functies die elkaar kunnen aanroepen. Diezelfde functies kunnen ook aan variabelen worden toegewezen en zelfs als parameter in een functieaanroep gebruikt worden.
+
+
+Een voorbeeld van een algoritme is het algoritme van Euclides, dat de grootste gemene deler van twee strikt positieve getallen in de variabelen a en b geeft. De informele beschrijving van dit algoritme is als volgt:
+
+ Zolang a en b niet gelijk zijn:
+* Trek van het grootste van de twee het andere af.
+ Zodra ze gelijk zijn, is de grootste gemene deler a (of b).
+
+In pseudocode:
+
+ function ggd(a,b)
+   if a  Geschiedenis  Lijst  Gerelateerde onderwerpen 
+ Computer
+ Grafentheorie
+ Turingmachine, algoritmen voor Turingmachines
+ Complexiteitstheorie
+ Algoritme van Lamport
+ Online-algoritme
+
+
+

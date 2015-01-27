@@ -17,21 +17,16 @@ class Semanticizer(object):
         Filename of the stored model from which to load the
         Wikipedia statistics.
 
-    N : int
-        Maximum length of the ngrams to extract from the token
-        sequences. This should be the same as the length used to
-        create the stored model.
     """
 
-    def __init__(self, fname, N=7):
+    def __init__(self, fname):
+        """Create a semanticizer from a stored model."""
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
-        cur = self.db.cursor()
-        for target, anchor, count in cur.execute(
-            'select target, ngram as anchor, count '
-            'from linkstats, ngrams '
-            'where ngram_id = ngrams.id;'):
+        self._cur = self.db.cursor()
+
+        for target, anchor, count in self._get_senses_counts():
             commonness[anchor].append((target, count))
 
         for anchor, targets in six.iteritems(commonness):
@@ -43,7 +38,19 @@ class Semanticizer(object):
             commonness[anchor] = [(t, count / total) for t, count in targets]
 
         self.commonness = commonness
-        self.N = N
+        self.N = self._get_ngram_max_length()
+
+    def _get_ngram_max_length(self):
+        self._cur.execute("select value "
+                          "from parameters "
+                          "where key = 'N';")
+        return int(self._cur.fetchone()[0])
+
+    def _get_senses_counts(self):
+        """Return all senses and their counts."""
+        return self._cur.execute('select target, ngram as anchor, count '
+                                'from linkstats, ngrams '
+                                'where ngram_id = ngrams.id;')
 
     def all_candidates(self, s):
         """Retrieve all candidate entities.
@@ -56,9 +63,10 @@ class Semanticizer(object):
         Returns
         -------
         candidates : iterable over (int, int, string, float)
-            Candidate entities: 4-tuples of start index, end index
-            (both in tokenized input), target entity and probability
-            (commonness).
+            Candidate entities are 4-tuples of the indices `start` and
+            `end` (both in tokenized input, and both start at 1),
+            `target entity` (title of the Wikipedia article) and
+            `probability` (commonness.)
         """
 
         if isinstance(s, six.string_types):

@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+from os.path import basename
 from bz2 import BZ2File
 from collections import Counter
 import gzip
@@ -13,6 +14,7 @@ import xml.etree.ElementTree as etree   # don't use LXML, it's slower (!)
 
 import six
 from semanticizest._util import ngrams
+from semanticizest._version import __version__
 
 
 _logger = logging.getLogger(__name__)
@@ -196,8 +198,9 @@ def page_statistics(page, N, sentence_splitter=None, tokenizer=None):
             sentences = re.split(r'(?:\n{2,}|\.\s+)', no_links,
                                  re.MULTILINE | re.UNICODE)
         else:
-            sentences = [sentence for paragraph in re.split('\n+', no_links)
-                                  for sentence in paragraph]
+            sentences = [sentence
+                         for paragraph in re.split('\n+', no_links)
+                         for sentence in paragraph]
 
         if tokenizer is None:
             tokenizer = re.compile(r'\w+', re.UNICODE).findall
@@ -248,6 +251,15 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     redirects = {}
 
     c = db.cursor()
+
+    # Store the semanticizer version for later reference
+    c.execute('''insert into parameters values ('version', ?);''', (__version__,))
+
+    # Store the dump file name
+    c.execute('''insert into parameters values ('dump', ?);''', (basename(dump),))
+
+    # Store the maximum ngram length, so we can use it later on
+    c.execute('''insert into parameters values ('N', ?);''', (str(N),))
 
     # Temporary index to speed up insertion
     c.execute('''create unique index target_anchor

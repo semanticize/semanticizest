@@ -5,8 +5,7 @@ Usage:
 
 Options:
     --download=wikiname     Download dump from dumps.wikimedia.org first
-    --ngram=order, -N order Maximum order of ngrams
-                            [default 7, None to disable]
+    --ngram=order, -N order Maximum order of ngrams, set to None to disable [default: 7]
     --help, -h              This help
 """
 from __future__ import print_function
@@ -59,7 +58,7 @@ def main(args):
 
     model_fname = args['<model-filename>']
     ngram = args['--ngram']
-    if ngram in (None, "None"):
+    if ngram == "None":
         ngram = None
     else:
         ngram = int(ngram)
