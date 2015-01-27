@@ -5,7 +5,9 @@ Usage:
 
 Options:
     --download=wikiname     Download dump from dumps.wikimedia.org first
-    --ngram=order, -N order Maximum order of ngrams, set to None to disable [default: 7]
+    --ngram=<order>, -N <order>
+                            Maximum order of ngrams, set to None to disable
+                            [default: 7]
     --help, -h              This help
 """
 from __future__ import print_function
