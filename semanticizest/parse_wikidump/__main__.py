@@ -13,6 +13,7 @@ Options:
 from __future__ import print_function
 
 import logging
+import re
 import sqlite3
 import sys
 
@@ -45,18 +46,15 @@ DUMP_TEMPLATE = (
     "https://dumps.wikimedia.org/{0}/latest/{0}-latest-pages-articles.xml.bz2")
 
 
+def die(msg):
+    print("semanticizest.parse_wikidump: %s" % msg, file=sys.stderr)
+    sys.exit(1)
+
+
 def main(args):
     args = docopt(__doc__, args)
 
     wikidump = args['<dump>']
-    if args["--download"]:
-        url = DUMP_TEMPLATE.format(args["--download"])
-        logger.info("Saving wikidump to %r", wikidump)
-        try:
-            urlretrieve(url, wikidump, Progress())
-        except HTTPError as e:
-            print("Cannot download {0!r}: {1}".format(url, e))
-            sys.exit(1)
 
     model_fname = args['<model-filename>']
     ngram = args['--ngram']
@@ -65,12 +63,30 @@ def main(args):
     else:
         ngram = int(ngram)
 
-    db = sqlite3.connect(model_fname)
+    logger.info("Creating database at %r" % model_fname)
+    try:
+        db = sqlite3.connect(model_fname)
+    except sqlite3.OperationalError as e:
+        if 'unable to open' in str(e):
+            # This exception doesn't store the path.
+            die("%s: %r" % (e, model_fname))
     with open(createtables_path()) as f:
         create = f.read()
 
     c = db.cursor()
-    c.executescript(create)
+    try:
+        c.executescript(create)
+    except sqlite3.OperationalError as e:
+        if re.search(r'table .* already exists', str(e)):
+            die("database %r already populated" % model_fname)
+
+    if args["--download"]:
+        url = DUMP_TEMPLATE.format(args["--download"])
+        logger.info("Saving wikidump to %r", wikidump)
+        try:
+            urlretrieve(url, wikidump, Progress())
+        except HTTPError as e:
+            die("Cannot download {0!r}: {1}".format(url, e))
 
     parse_dump(wikidump, db, N=ngram)
     db.close()
