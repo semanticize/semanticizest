@@ -11,11 +11,15 @@ from semanticizest.parse_wikidump import parse_dump
 class Semanticizer(object):
     """Entity linker.
 
+    This is the main class for using Semanticizest. It's a handle on a
+    statistical model that lives on disk.
+
     Parameters
     ----------
     fname : string
-        Filename of the stored model from which to load the
-        Wikipedia statistics.
+        Filename of the stored model from which to load the Wikipedia
+        statistics. Loading is lazy; the underlying file should not be
+        modified while any Semanticizer is using it.
 
     """
 
@@ -53,7 +57,7 @@ class Semanticizer(object):
                                  'where ngram_id = ngrams.id;')
 
     def all_candidates(self, s):
-        """Retrieve all candidate entities.
+        """Retrieve all candidate entities from a piece of text.
 
         Parameters
         ----------
