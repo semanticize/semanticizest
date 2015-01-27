@@ -9,18 +9,18 @@ from semanticizest.parse_wikidump import parse_dump
 
 
 class Semanticizer(object):
-    """Entity linker."""
+    """Entity linker.
+
+    Parameters
+    ----------
+    fname : string
+        Filename of the stored model from which to load the
+        Wikipedia statistics.
+
+    """
 
     def __init__(self, fname):
-        """Create a semanticizer from a stored model.
-
-        Parameters
-        ----------
-        fname : string
-            Filename of the stored model from which to load the
-            Wikipedia statistics.
-
-        """
+        """Create a semanticizer from a stored model."""
         commonness = defaultdict(list)
 
         self.db = sqlite3.connect(fname)
@@ -44,8 +44,7 @@ class Semanticizer(object):
         self._cur.execute("select value "
                           "from parameters "
                           "where key = 'N';")
-        N = int(self._cur.fetchone()[0])
-        return N
+        return int(self._cur.fetchone()[0])
 
     def _get_senses_counts(self):
         """Return all senses and their counts."""
