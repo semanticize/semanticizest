@@ -26,7 +26,8 @@ To train a semanticizer, download a Wikipedia database dump from
 The result will be a semanticizer model (in SQLite 3 format, if you must know).
 
 Alternatively, you can use the --download flag to instruct semanticizest to 
-download the LATEST wikipedia dump. For example:
+download the LATEST wikipedia dump. For example, to download and process the
+`Scottish Wikipedia`_ (which is small and useful for testing)::
 
     python -m semanticizest.parse_wikidump --download scowiki sco.model
 
@@ -48,3 +49,5 @@ See the file LICENSE for details.
 
 .. _`Apache License, Version 2.0`:
    http://www.apache.org/licenses/LICENSE-2.0.html
+.. _`Scottish Wikipedia`:
+   https://sco.wikipedia.org
