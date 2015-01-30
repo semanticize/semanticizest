@@ -21,6 +21,8 @@ First we need to create a model for the semanticizer.
 The following command will download and read a wikipedia dump
 (in this case the Limburgish wiki, just because it's small)
 and subsequently create and store the corresponding model.
+If you want the English Wikipedia, replace ``liwiki`` by ``enwiki``
+and be prepared to run ``parse_wikidump`` overnight on a server.
 
 .. code:: bash
 
