@@ -74,6 +74,8 @@ def main(args):
         if 'unable to open' in str(e):
             # This exception doesn't store the path.
             die("%s: %r" % (e, model_fname))
+        else:
+            raise
     with open(createtables_path()) as f:
         create = f.read()
 
@@ -83,6 +85,8 @@ def main(args):
     except sqlite3.OperationalError as e:
         if re.search(r'table .* already exists', str(e)):
             die("database %r already populated" % model_fname)
+        else:
+            raise
 
     if args["--download"]:
         url = DUMP_TEMPLATE.format(args["--download"])
