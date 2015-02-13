@@ -44,13 +44,18 @@ class Semanticizer(object):
         self._cur.execute("select value "
                           "from parameters "
                           "where key = 'N';")
-        return int(self._cur.fetchone()[0])
+        N = self._cur.fetchone()[0]
+        if N == 'None':
+            N = None
+        else:
+            N = int(N)
+        return N
 
     def _get_senses_counts(self):
         """Return all senses and their counts."""
         return self._cur.execute('select target, ngram as anchor, count '
-                                'from linkstats, ngrams '
-                                'where ngram_id = ngrams.id;')
+                                 'from linkstats, ngrams '
+                                 'where ngram_id = ngrams.id;')
 
     def all_candidates(self, s):
         """Retrieve all candidate entities.
@@ -81,7 +86,7 @@ class Semanticizer(object):
                     yield i, j, target, prob
 
 
-def create_model(dump, db_file=':memory:'):
+def create_model(dump, db_file=':memory:', N=2):
     """Create a semanticizer model from a wikidump and store it in a DB.
 
     Parameters
@@ -100,18 +105,18 @@ def create_model(dump, db_file=':memory:'):
         The handle to the newly created db containing the model.
     """
     db = sqlite3.connect(db_file)
-    _parse_stuff_to_db(dump, db)
+    _parse_stuff_to_db(dump, db, N=N)
     return db
 
 
-def _parse_stuff_to_db(fname, db):
+def _parse_stuff_to_db(fname, db, N=2):
     """Parses a wikidump, stores the model supplied db."""
     cur = db.cursor()
     with open(createtables_path()) as create:
         cur.executescript(create.read())
     dump = join(dirname(abspath(__file__)),
                 fname)
-    parse_dump(dump, db, N=2)
+    parse_dump(dump, db, N=N)
 
     return db
 

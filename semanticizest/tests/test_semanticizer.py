@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 from glob import glob
 from os.path import basename
 
-from nose.tools import assert_equal, assert_multi_line_equal
+from nose.tools import assert_equal, assert_multi_line_equal, assert_true
 
 from semanticizest import Semanticizer
 from semanticizest._semanticizer import create_model
@@ -40,7 +40,7 @@ def test_semanticizer_redirect():
     assert_equal(expected, actual)
 
 
-def test_semanticiser_nlwiki():
+def test_semanticizer_nlwiki():
     tempfile = NamedTemporaryFile()
     db = create_model(join(dirname(__file__),
                            'nlwiki-20140927-pages-articles-sample.xml'),
@@ -51,10 +51,10 @@ def test_semanticiser_nlwiki():
             for d in "in expected actual".split()}
 
     input_test_cases = glob(join(dirs['in'], '*'))
-    assert len(input_test_cases) == 20, \
+    assert(len(input_test_cases) == 20,
            ("number of input test cases in '{}' "
             "should be 20, was {}".format(dirs['in'],
-                                          len(input_test_cases)))
+                                          len(input_test_cases))))
 
     for doc in input_test_cases:
         fname = basename(doc)
@@ -70,3 +70,13 @@ def test_semanticiser_nlwiki():
 
         assert_multi_line_equal(expected,
                                 actual)
+
+
+def test_semanticizer_nlwiki_no_ngrams():
+    tempfile = NamedTemporaryFile()
+    db = create_model(join(dirname(__file__),
+                           'nlwiki-20140927-pages-articles-sample.xml'),
+                      tempfile.name, N=None)
+    sem = Semanticizer(tempfile.name)
+
+    assert_true(True)
