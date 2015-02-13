@@ -74,8 +74,8 @@ def test_extract_links():
     assert_equal(first_link("[[bar]]/baz"), ("Bar", "bar"))
     # XXX The following are broken. They do occur in the wild, e.g.,
     # -18[[Celsius|°C]] and 700[[Megabyte|MB]]-cd (found in nlwiki dump).
-    #assert_equal(first_link("[[bar]]0"), ("Bar", "bar"))
-    #assert_equal(first_link("[[bar]]_"), ("Bar", "bar"))
+    # assert_equal(first_link("[[bar]]0"), ("Bar", "bar"))
+    # assert_equal(first_link("[[bar]]_"), ("Bar", "bar"))
 
     # We're not interested in section links
     assert_equal(first_link("[[#Some section|elsewhere]] [[other_article]]"),
@@ -146,7 +146,7 @@ def test_parse_dump_ngrams():
 
     assert_in(ur'van München', ngram_count)
     assert_in(u'Vrede van M\xfcnster', link_count)
-    #assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
+    # assert_greater(link_count[('AMX Index', 'Amsterdam Midkap Index')], 0)
     assert_greater(link_count['AMX Index'], 0)
 
 

@@ -258,10 +258,12 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     c = db.cursor()
 
     # Store the semanticizer version for later reference
-    c.execute('''insert into parameters values ('version', ?);''', (__version__,))
+    c.execute('''insert into parameters values ('version', ?);''',
+              (__version__,))
 
     # Store the dump file name
-    c.execute('''insert into parameters values ('dump', ?);''', (basename(dump),))
+    c.execute('''insert into parameters values ('dump', ?);''',
+              (basename(dump),))
 
     # Store the maximum ngram length, so we can use it later on
     c.execute('''insert into parameters values ('N', ?);''', (str(N),))
@@ -308,7 +310,7 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     for redir, target in redirects.items():
         for anchor, count in c.execute('''select ngram_id, count from linkstats
                                           where target = ?''', [redir]):
-            #TODO: combine the next two execute statements
+            # TODO: combine the next two execute statements
             c.execute('''insert or ignore into linkstats values (?, ?, 0)''',
                       [anchor, target])
             c.execute('''update linkstats
