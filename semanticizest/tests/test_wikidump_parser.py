@@ -89,6 +89,14 @@ def test_extract_links():
                  [("Lithium", "Li"), ("Fluorine", "F")])
     assert_equal(list(extract_links("[[tera-|tera]][[becquerel]]s")),
                  [("Tera-", "tera"), ("Becquerel", "becquerels")])
+    assert_equal(list(extract_links("""[[Lord's
+        prayer]]
+        [[Dismissal 
+        (cricket)|dismissal]] [[Badass|Chuck 
+        Norris]]""")),
+                 [("Lord's prayer", "Lord's prayer"),
+                 ("Dismissal (cricket)", "dismissal"),
+                 ("Badass", "Chuck Norris")])
 
 
 def test_extract_pages_unicode():

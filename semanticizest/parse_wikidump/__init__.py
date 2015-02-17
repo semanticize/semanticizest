@@ -122,6 +122,10 @@ def extract_links(article):
         if ':' in target:
             continue
 
+        # Some links contain newlines...
+        target = re.sub(r'\s+', ' ', target)
+        anchor = re.sub(r'\s+', ' ', anchor)
+
         # Remove section links and normalize to the format used in <redirect>
         # elements: uppercase first character, spaces instead of underscores.
         target = target.split('#', 1)[0].replace('_', ' ')
