@@ -22,23 +22,23 @@ def test_ngrams():
 
 @raises(ValueError)
 def test_ngrams_order_0():
-    lst = "a b c".split()
+    tokens = "a b c".split()
     # The execution of the generator is delayed until the values are
     # requested, so that's the first opportunity at which an Exception
     # can/will be raised.
-    list(ngrams_with_pos(lst, -3))
+    list(ngrams_with_pos(tokens, -3))
 
 
 def test_ngrams_order_1():
-    lst = "a b c".split()
-    actual = list(ngrams(lst, 1))
-    expected = lst
+    tokens = "a b c".split()
+    actual = list(ngrams(tokens, 1))
+    expected = tokens
     assert_equal(expected, actual)
 
 
 def test_ngrams_order_2():
-    lst = "a b c".split()
-    actual = list(ngrams(lst, 2))
+    tokens = "a b c".split()
+    actual = list(ngrams(tokens, 2))
     expected = ["a", "a b",
                 "b", "b c",
                 "c"]
@@ -46,8 +46,8 @@ def test_ngrams_order_2():
 
 
 def test_ngrams_order_3():
-    lst = "a b c".split()
-    actual = list(ngrams(lst, 3))
+    tokens = "a b c".split()
+    actual = list(ngrams(tokens, 3))
     expected = ["a", "a b", "a b c",
                 "b", "b c",
                 "c"]
@@ -56,8 +56,8 @@ def test_ngrams_order_3():
 
 def test_ngrams_order_4():
     # same result as test_ngrams_order_3...
-    lst = "a b c".split()
-    actual = list(ngrams(lst, 4))
+    tokens = "a b c".split()
+    actual = list(ngrams(tokens, 4))
     expected = ["a", "a b", "a b c",
                 "b", "b c",
                 "c"]
@@ -66,19 +66,26 @@ def test_ngrams_order_4():
 
 def test_ngrams_order_none():
     # same result as test_ngrams_order_3...
-    lst = "a b c".split()
-    actual = list(ngrams(lst, None))
+    tokens = "a b c".split()
+    actual = list(ngrams(tokens, None))
     expected = ["a", "a b", "a b c",
                 "b", "b c",
                 "c"]
     assert_equal(expected, actual)
 
 
+def test_ngrams_order_empty_list():
+    no_tokens = []
+    actual = list(ngrams(no_tokens, None))
+    expected = []
+    assert_equal(expected, actual)
+
+
 @raises(TypeError)
 def test_ngrams_order_string():
     # This has bitten me three(!) times now. Basta!
-    lst = "a b c".split()
-    list(ngrams_with_pos(lst, 'foobar'))
+    tokens = "a b c".split()
+    list(ngrams_with_pos(tokens, 'foobar'))
 
 
 def test_url_from_title():

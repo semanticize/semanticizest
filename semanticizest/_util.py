@@ -26,6 +26,11 @@ def ngrams_with_pos(lst, N=None):
     ValueError
         If `N` is not at least 1.
     """
+    if len(lst) == 0:
+        # token list is empty, nothing to do
+        return
+        yield
+
     if N is None:
         N = len(lst)
 
