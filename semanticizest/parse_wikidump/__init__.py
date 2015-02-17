@@ -104,6 +104,14 @@ def extract_pages(f):
             elem.clear()
 
 
+def _clean_link(l):
+    """Clean links (anchor and titles)."""
+    l = l.strip()
+    l = re.sub(r'\s+', ' ', l)
+
+    return l
+
+
 def extract_links(article):
     """Extract all (or most) links from article text (wiki syntax).
 
@@ -123,8 +131,8 @@ def extract_links(article):
             continue
 
         # Some links contain newlines...
-        target = re.sub(r'\s+', ' ', target)
-        anchor = re.sub(r'\s+', ' ', anchor)
+        target = _clean_link(target)
+        anchor = _clean_link(anchor)
 
         # Remove section links and normalize to the format used in <redirect>
         # elements: uppercase first character, spaces instead of underscores.

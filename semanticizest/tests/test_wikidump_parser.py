@@ -98,6 +98,8 @@ def test_extract_links():
                  ("Dismissal (cricket)", "dismissal"),
                  ("Badass", "Chuck Norris")])
 
+    assert_equal(list(extract_links("[[C. Stephen Evans | Evans, C. Stephen]]")),
+                 [('C. Stephen Evans', 'Evans, C. Stephen')])
 
 def test_extract_pages_unicode():
     if six.PY3:
@@ -185,8 +187,8 @@ def test_parse_wikidump():
         db = sqlite3.connect(model_file.name)
         cur = db.cursor()
         actual = list(cur.execute('select count(*) from ngrams;'))[0][0]
-        expected = 22865
-        assert_equal(actual, expected)
+        expected = 22864
+        assert_equal(expected, actual)
 
 
 def test_remove_links():
