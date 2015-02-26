@@ -67,6 +67,14 @@ def main(args):
     else:
         ngram = int(ngram)
 
+    if args["--download"]:
+        url = DUMP_TEMPLATE.format(args["--download"])
+        logger.info("Saving wikidump to %r", wikidump)
+        try:
+            urlretrieve(url, wikidump, Progress())
+        except HTTPError as e:
+            die("Cannot download {0!r}: {1}".format(url, e))
+
     logger.info("Creating database at %r" % model_fname)
     try:
         db = sqlite3.connect(model_fname)
@@ -87,14 +95,6 @@ def main(args):
             die("database %r already populated" % model_fname)
         else:
             raise
-
-    if args["--download"]:
-        url = DUMP_TEMPLATE.format(args["--download"])
-        logger.info("Saving wikidump to %r", wikidump)
-        try:
-            urlretrieve(url, wikidump, Progress())
-        except HTTPError as e:
-            die("Cannot download {0!r}: {1}".format(url, e))
 
     parse_dump(wikidump, db, N=ngram)
     db.close()
