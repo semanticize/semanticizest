@@ -51,10 +51,9 @@ def test_semanticizer_nlwiki():
             for d in "in expected actual".split()}
 
     input_test_cases = glob(join(dirs['in'], '*'))
-    assert(len(input_test_cases) == 20,
-           ("number of input test cases in '{}' "
-            "should be 20, was {}".format(dirs['in'],
-                                          len(input_test_cases))))
+    assert_equal(len(input_test_cases), 20,
+                 msg=("number of input test cases in %r should be 20"
+                      % dirs['in']))
 
     for doc in input_test_cases:
         fname = basename(doc)
